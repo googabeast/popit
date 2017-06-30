@@ -1,0 +1,13 @@
+@import (reference) "lessMinded.less";
+/******************************************************* generic / express modal ***************/
+
+#modalWrap{
+	h2{ .txt(b 1.5em none l); margin-bottom:.5em; }
+	iframe{ .size(100% 100%); }
+	table td{ vertical-align:top; }
+	> [id^='expose']{ .dis(b); .bg(#000); .size(100% 100%); .pos(f);
+				.place(0 n n 0); .z(9998); .opacity(.5); }
+	> div.popup{ .dis(b); .size(700px); .bg(#fff); .z(9999); .opacity(0); border:1px solid #000; padding:0.5em;
+		a.close{ .dis(b); .size(35px 35px); .pos(a); .place(-20px -22px); .z(9999); .border-radius(35px); border:1px solid #000; }
+	}
+}

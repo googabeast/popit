@@ -1,0 +1,85 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>$.popit()</title>
+
+	<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+	<link href="static/css/common.css" rel="stylesheet" type="text/css"/>
+
+	<script type="text/javascript">
+	$.e = {
+		doc: { ready:[], custom:[] },
+		win: { scroll:[], load:[], resize:[], resizestop:[], orientationchange:[] }
+	};
+
+	com = {
+		load: function(templat, $div, obj, append, callback){
+			$.get(templat, function(value){
+				$.templates("tmpl", value);
+				var html = $.render.tmpl(obj);
+
+				if(append){
+					$div.append(html);
+				}else{
+					$div.html(html);
+				};
+				$("select, input[type='radio'], input[type='checkbox']").uniform();
+			}).done(function(){
+				if(callback !== undefined){
+					callback();
+				};
+			}).fail(function(error){});
+		},
+		checkApiEvents: function(api){
+			if(!$.isEmptyObject(api.doc)){
+				$.each(api.doc, function(k,v){
+					if(typeof v == "function"){
+						$.e.doc[k].push(v);
+					};
+				});
+			};
+			if(!$.isEmptyObject(api.win)){
+				$.each(api.win, function(k,v){
+					if(typeof v == "function"){
+						$.e.win[k].push(v);
+					};
+				});
+			};
+		}
+	};
+	</script>
+</head>
+
+<body>
+
+	<p><a href="javascript:void:(0);" data-popit="testing" data-info='{ "data":"a test modal" }'>Generic Link</a></p>
+	<p><a href="javascript:void:(0);" data-popit="testing2" data-info='{ "data":"a different test modal" }'>Generic Link2</a></p>
+
+
+
+
+	<script src="static/js/popit.js"></script>
+	<script type="text/javascript">
+	//This JS file must load last across the entire system - it controls all custom events, document ready and window binginds throughout.
+
+	//bind custom document events
+	for(var i = 0; i < $.e.doc.custom.length; i++){
+		var c = $.e.doc.custom[i];
+		$(document).on(c.name, c.func);
+	};
+
+	//new plugins have api's and push events with these functions
+	$(document).ready(function(){for(var i = 0; i < $.e.doc.ready.length; i++){ $.e.doc.ready[i](); };});
+
+	$(window).on({
+		load:function(){for(var i = 0; i < $.e.win.load.length; i++){ $.e.win.load[i](); };},
+		scroll:function(){for(var i = 0; i < $.e.win.scroll.length; i++){ $.e.win.scroll[i](); };},
+		resize:function(){for(var i = 0; i < $.e.win.resize.length; i++){ $.e.win.resize[i](); };},
+		resizestop:function(){for(var i = 0; i < $.e.win.resizestop.length; i++){ $.e.win.resizestop[i](); };},
+		orientationchange:function(){for(var i = 0; i < $.e.win.orientationchange.length; i++){ $.e.win.orientationchange[i](); };}
+	});
+	</script>
+</body>
+</html>
+

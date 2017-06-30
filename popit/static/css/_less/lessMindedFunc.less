@@ -1,0 +1,73 @@
+@api:`function(){
+	var api = {
+		property:function(property, value, prefixes){
+			var str = "",
+				arr = prefixes.split(" "),
+				count = arr.length;
+
+			for(var i = 0; i < count; ++i){
+				str += "-"+ arr[i] +"-"+ property +":"+ value+";";
+				str = str.replace(/\[|\]/g, "").replace("),", ")");
+			};
+			str += property +":"+ value;
+			str = ";" + str;
+			str = str.replace(/\[|\]/g, "").replace("),", ")");
+			return(str);
+		},
+		val:function(property, value, prefixes){
+			var str = "", val = "",
+				arr = prefixes.split(" "),
+				count = arr.length;
+
+			for(var i = 0; i < count; ++i){
+				str += property +": -"+ arr[i] +"-"+ value+";";
+				str = str.replace(/\[|\]/g, "").replace("),", ")");
+			};
+
+			if(property === "background" && value.indexOf("(top") > 0){
+				val = value.replace("(top","(to bottom");
+			}else if(property === "background" && value.indexOf("(left") > 0){
+				val = value.replace("(left","(to right");
+			}else{
+				val = value;
+			};
+
+			str += property +":"+ val;
+			str = ";" + str;
+			str = str.replace(/\[|\]/g, "").replace("),", ")");
+			return(str);
+		},
+		isEven:function(index){
+			var isit = (index % 2 === 0) ? true : false;
+			return(isit);
+		},
+		contains:function(str, type){
+			var isit,
+				arrType = type.split(" "),
+				arrStr = str.split(" "),
+				typeCount = arrType.length,
+				strCount = arrStr.length;
+
+			if(arrType.length > 1){
+				for(var i = 0; i < typeCount; ++i){
+					if(!isit){ isit = (str.indexOf(arrType[i]) > 0) ? true : false; };
+				};
+			}else{
+				isit = (str.indexOf(type) > 0) ? true : false;
+			};
+			return(isit);
+		},
+		blank:function(shorthand){
+			return(true);
+		},
+		run:function(callback){
+			return(callback(api));
+		}
+	};
+	return(api);
+}`;
+
+@apiGlobalInjector: `(function() {
+	this.api = (@{api})();
+	return("LessMinded.com global helper functions");
+})()`;

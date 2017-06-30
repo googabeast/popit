@@ -1,0 +1,1477 @@
+///**********************************************************************************************************/
+// #  .                                         .          .
+// #  |                             o           |          |
+// #  |  .-. .--..--.     .--.--.   .  .--.  .-.|  .-.  .-.|
+// #  | (.-' `--.`--.     |  |  |   |  |  | (   | (.-' (   |
+// #  `- `--'`--'`--'     '  '  `--' `-'  `- `-'`- `--' `-'`-
+// #
+// #  LessMinded.com created by michael coleman (9/24/14) v1.01
+///**********************************************************************************************************/
+@import (reference) "lessMindedFunc.less";
+
+// #  Please change these values to match your site
+@bgcolor:#fff;
+@text:#000;
+
+
+
+///************************************************************************* helper functions ***************/
+.property(@property, @value, @prefixes){
+	-lessMinded:@property ~`api.property("@{property}", "@{value}", "@{prefixes}")`;
+}
+.value(@property, @value, @prefixes){
+	-lessMinded:@property ~`api.val("@{property}", "@{value}", "@{prefixes}")`;
+}
+///********************************************************************* end helper functions ***************/
+
+
+
+///************************************************************************** common mixins() ***************/
+.clear(){ .size(0 0 clear); .dis(b); .over(h); visibility:hidden; }
+.hide(){ .dis(n); .pos(a); .place(0 n n -9999em); visibility:hidden; }
+.boxed(){ .value(box-sizing, ~"border-box", ~'webkit moz'); }
+.iOSreset(){
+	input[type="text"], input[type="button"],
+	input[type="submit"], input[type="password"], textarea, .fakeBtn{
+		.border-radius(0) !important;
+		border-top-left-radius:0 !important;
+		border-top-right-radius:0 !important;
+		border-bottom-right-radius:0 !important;
+		border-bottom-left-radius:0 !important;
+		-webkit-border-radius:0 !important;
+		-webkit-appearance:none;
+	}
+}
+///********************************************************************** end common mixins() ***************/
+
+
+
+///**********************************************************************************************************/
+// #
+// #  ,---.          |             o    o
+// #  |__. ,---.,---.|---     ,-.-...  ,.,---.
+// #  |    |   ||   ||        | | || >< ||   |
+// #  `    `---'`   '`---'    ` ' '`'  ```   '
+// #
+// #  about:			this is a quick and easy way to define font-family property without having to
+// #					remember all the strange font names and spellings;
+// #
+// #  accepts: 			a single keyword without comma seperation or quotation;
+// #
+// #  short hand:		.fontTest{ .font(g|b|t|a|ab|c|i|l|ta|tr|v|cn); }
+// #  full usage:		.fontTest{ .font(georgia|book|times|arial|arialblack|comic|impact|lucida|tahoma|trebuchet|verdana|courier); }
+// #
+// #  example:			.fontTest{ .font(g); }
+// #  output:			.fontTest{ font-family:Georgia, serif; }
+// #
+///**********************************************************************************************************/
+.font(@x){
+	.do(@x) when (@x = georgia), (@x = g){ @var:Georgia, serif; }
+	.do(@x) when (@x = book), (@x = b ){ @var:"Palatino Linotype", "Book Antiqua", Palatino, serif; }
+	.do(@x) when (@x = times), (@x = t){ @var:"Times New Roman", Times, serif; }
+	.do(@x) when (@x = arial), (@x = a){ @var:Arial, Helvetica, sans-serif; }
+	.do(@x) when (@x = arialblack), (@x = ab){ @var:"Arial Black",Arial; }
+	.do(@x) when (@x = comic), (@x = c){ @var:"Comic Sans MS", cursive, sans-serif; }
+	.do(@x) when (@x = impact), (@x = i){ @var:Impact, Charcoal, sans-serif; }
+	.do(@x) when (@x = lucida), (@x = l){ @var:"Lucida Sans Unicode", "Lucida Grande", sans-serif; }
+	.do(@x) when (@x = tahoma), (@x = ta){ @var:Tahoma, Geneva, sans-serif; }
+	.do(@x) when (@x = trebuchet), (@x = tr){ @var:"Trebuchet MS", Helvetica, sans-serif; }
+	.do(@x) when (@x = verdana), (@x = v){ @var:Verdana, Geneva, sans-serif; }
+	.do(@x) when (@x = courier), (@x = cn){ @var:"Courier New", Courier, monospace; }
+	.do(@x);
+	font-family:@var;
+}
+
+
+
+///**********************************************************************************************************/
+// #
+// #      |o          |                       o    o
+// #  ,---|.,---.,---.|    ,---.,   .    ,-.-...  ,.,---.
+// #  |   ||`---.|   ||    ,---||   |    | | || >< ||   |
+// #  `---'``---'|---'`---'`---^`---|    ` ' '`'  ```   '
+// #             |              `---'
+// #
+// #  about:			this is a easy way to define the disable property. utilizing the beginning
+// #					letter of the most common values, then breaking off and getting a bit more specific
+// #
+// #  accepts: 			a single keyword without comma seperation or quotation;
+// #
+// #  short hand:		.displayTest{ .dis(b|n|f|t|i|u|in|ib|if|it|li|tcap|tcell|trow|trowg|tcol|tcolg|theadg|tfootg); }
+// #  full usage:		.displayTest{ .dis(yes|block|no|none|flex|table|inline|unset|inherit|inline-block|inline-flex|inline-table|list-item|table-caption|table-cell|table-row|table-row-group|table-column|table-column-group|table-header-group|table-footer-group); }
+// #
+// #  example:			.displayTest{ .dis(b); }
+// #  output:			.displayTest{ display:block; }
+// #
+///**********************************************************************************************************/
+.dis(@x){
+	.do(@x) when (@x = b), (@x = yes), (@x = block){ @var:block; }
+	.do(@x) when (@x = n), (@x = no), (@x = none){ @var:none; }
+	.do(@x) when (@x = f), (@x = flex){ @var:flex; }
+	.do(@x) when (@x = t), (@x = table){ @var:table; }
+	.do(@x) when (@x = i), (@x = inline){ @var:inline; }
+	.do(@x) when (@x = u), (@x = unset){ @var:unset; }
+	.do(@x) when (@x = in), (@x = inherit){ @var:inherit; }
+	.do(@x) when (@x = ib), (@x = inline-block){ @var:inline-block; }
+	.do(@x) when (@x = if), (@x = inline-flex){ @var:inline-flex; }
+	.do(@x) when (@x = it), (@x = inline-table){ @var:inline-table; }
+	.do(@x) when (@x = li), (@x = list-item){ @var:list-item; }
+	.do(@x) when (@x = tcap), (@x = table-caption){ @var:table-caption; }
+	.do(@x) when (@x = tcell), (@x = table-cell){ @var:table-cell; }
+	.do(@x) when (@x = trow), (@x = table-row){ @var:table-row; }
+	.do(@x) when (@x = trowg), (@x = table-row-group){ @var:table-row-group; }
+	.do(@x) when (@x = tcol), (@x = table-column){ @var:table-column; }
+	.do(@x) when (@x = tcolg), (@x = table-column-group){ @var:table-column-group; }
+	.do(@x) when (@x = theadg), (@x = table-header-group){ @var:table-header-group; }
+	.do(@x) when (@x = tfootg), (@x = table-footer-group){ @var:table-footer-group; }
+	.do(@x);
+	display:@var;
+}
+
+
+
+///**********************************************************************************************************/
+// #
+// #  |             |             o    o
+// #  |--- ,---..  ,|---     ,-.-...  ,.,---.
+// #  |    |---' >< |        | | || >< ||   |
+// #  `---'`---''  ``---'    ` ' '`'  ```   '
+// #
+// #  about:			text has more style options then anything else in the CSS kingdom; you modify text
+// #					with more properties, values and combinations then any other element; because of this
+// #  					we combined all of them into one mixin;
+// #
+// #  accepts: 			any combination of keywords, units, and strings majority without comma seperation or
+// #  					quotation; special rules defined for line-height and "strings";
+// #
+// #  short hand:		.textTest{ .txt(1.5em|d|us|cap|caps|lower|non|c|l|r|j|n|b|u|i|s|o|no|lh 2em|smooth|"string"); }
+// #  full usage:		.textTest{ .txt(); }
+// #
+// #  example:			.textTest{ .txt(1.5em i u b c @black lh 2em lower "string"); }
+// #  output:			.textTest{
+// #						font-size:1.5em;
+// #						font-style:italic;
+// #						font-decoration:underline;
+// #						font-weight:bold;
+// #						text-align:center;
+// #						color:#000;
+// #						line-height:2em;
+// #						text-transform:lowercase;
+// #						content:"string";
+// #					}
+// #
+///**********************************************************************************************************/
+.txt(@vars){
+	@index:length(@vars);
+	.txt-loop(@index) when (@index > 0){
+		@turn:extract(@vars, @index);
+		@turn1:extract(@vars, @index + 1);
+		@turnb:extract(@vars, @index - 1);
+		.condition(@turn) when (isunit(@turn, px)), (isunit(@turn, rem)), (isunit(@turn, "%")), (isunit(@turn, em)), (isunit(@turn, pt)){
+			.do(@turn) when not (@turnb = lh), (@turnb = ti){ font-size:@turn; }
+			.do(@turn);
+		}
+		.condition(@turn) when (@turn = d), (@turn = inherit){ font-size:inherit; }
+		.condition(@turn) when (@turn = us), (@turn = unset){ font-size:unset; }
+		.condition(@turn) when (iscolor(@turn)){
+			.do(@turn){ color:@turn; }
+			.do(@turn);
+		}
+		.condition(@turn) when (@turn = cap), (@turn = capitalize), (@turn = caps), (@turn = uppercase), (@turn = lower), (@turn = lowercase), (@turn = non), (@turn = none){
+			.do(@turn) when (@turn = cap), (@turn = capitalize){ @var:capitalize; }
+			.do(@turn) when (@turn = caps), (@turn = uppercase){ @var:uppercase; }
+			.do(@turn) when (@turn = lower), (@turn = lowercase){ @var:lowercase; }
+			.do(@turn) when (@turn = non), (@turn = none){ @var:none; }
+			.do(@turn);
+			text-transform:@var;
+		}
+		.condition(@turn) when (@turn = c), (@turn = center), (@turn = l), (@turn = left), (@turn = r), (@turn = right), (@turn = j), (@turn = justify){
+			.do(@turn) when (@turn = c), (@turn = center){ @var:center; }
+			.do(@turn) when (@turn = l), (@turn = left){ @var:left; }
+			.do(@turn) when (@turn = r), (@turn = right){ @var:right; }
+			.do(@turn) when (@turn = j), (@turn = justify){ @var:justify; }
+			.do(@turn);
+			text-align:@var;
+		}
+		.condition(@turn) when (@turn = n), (@turn = normal), (@turn = b), (@turn = bold), (@turn = u), (@turn = underline), (@turn = i), (@turn = italic), (@turn = s), (@turn = line), (@turn = strike), (@turn = o), (@turn = overline), (@turn = no), (@turn = lh), (@turn = ti), (@turn = smooth){
+			.do(@turn) when (@turn = n), (@turn = normal) and not (@turnb = lh), (@turnb = ti){ font-weight:normal; }
+			.do(@turn) when (@turn = b), (@turn = bold){ font-weight:bold; }
+			.do(@turn) when (@turn = u), (@turn = underline){ text-decoration:underline; }
+			.do(@turn) when (@turn = i), (@turn = italic){ font-style:italic; }
+			.do(@turn) when (@turn = s), (@turn = line), (@turn = strike){ text-decoration:line-through; }
+			.do(@turn) when (@turn = o), (@turn = overline){ text-decoration:overline; }
+			.do(@turn) when (@turn = no){ text-decoration:none; }
+			.do(@turn) when (@turn = lh){ line-height:@turn1; }
+			.do(@turn) when (@turn = ti){ text-indent:@turn1; }
+			.do(@turn) when (@turn = smooth){ -webkit-text-size-adjust:100%; text-rendering:optimizeLegibility; -webkit-font-smoothing:antialiased; }
+			.do(@turn);
+		}
+		.condition(@turn) when (isstring(@turn)){
+			.do(@turn){ content:@turn; }
+			.do(@turn);
+		}
+		.condition(@turn);
+		.txt-loop(@index - 1);
+	}
+	.txt-loop(@index);
+}
+
+
+
+///**********************************************************************************************************/
+// #
+// #                 o|    o                   o    o
+// #  ,---.,---.,---..|--- .,---.,---.    ,-.-...  ,.,---.
+// #  |   ||   |`---.||    ||   ||   |    | | || >< ||   |
+// #  |---'`---'`---'``---'``---'`   '    ` ' '`'  ```   '
+// #  |
+// #
+// #  about:			this is a easy way to define the position property. utilizing the beginning
+// #					letter or full word of the value
+// #
+// #  accepts: 			a single keyword without comma seperation or quotation;
+// #
+// #  short hand:		.positionTest{ .pos(a|f|r|s|i|st); }
+// #  full usage:		.positionTest{ .pos(absolute|fixed|relative|static|inherit|sticky); }
+// #
+// #  example:			.positionTest{ .pos(b); }
+// #  output:			.positionTest{ position:absolute; }
+// #
+///**********************************************************************************************************/
+.pos(@x){
+	.do(@x) when (@x = u), (@x = unset){ @var:unset; }
+	.do(@x) when (@x = a), (@x = absolute){ @var:absolute; }
+	.do(@x) when (@x = f), (@x = fixed){ @var:fixed; }
+	.do(@x) when (@x = r), (@x = relative){ @var:relative; }
+	.do(@x) when (@x = s), (@x = static){ @var:static; }
+	.do(@x) when (@x = i), (@x = inherit){ @var:inherit; }
+	.do(@x) when (@x = st), (@x = sticky){ @var:sticky; }
+	.do(@x);
+	position:@var;
+}
+
+
+
+
+
+///**********************************************************************************************************/
+// #
+// # |    o     |             |         |                  o    o
+// # |    .,---.|---     ,---.|--- ,   .|    ,---.    ,-.-...  ,.,---.
+// # |    |`---.|        `---.|    |   ||    |---'    | | || >< ||   |
+// # `---'``---'`---'    `---'`---'`---|`---'`---'    ` ' '`'  ```   '
+// #                               `---'
+// #  about:			this is a easy way to define list-style and list-style-type. utilizing the beginning
+// #					letter or full word of the value
+// #
+// #  accepts:
+// #
+// #  short hand:
+// #  full usage:
+// #
+// #  example:
+// #  output:
+// #
+///**********************************************************************************************************/
+.ls(@vars){
+	@index:length(@vars);
+	.ls-loop(@index) when (@index > 0){
+		@turn:extract(@vars, @index);
+		.condition(@turn) when (@turn = n), (@turn = none), (@turn = i), (@turn = initial), (@turn = d), (@turn = decimal), (@turn = ld), (@turn = dz), (@turn = decimal-leading-zero), (@turn = a), (@turn = alpha), (@turn = ua), (@turn = upper-alpha),(@turn = r), (@turn = lower-roman),(@turn = ur), (@turn = upper-roman){
+			.do(@turn) when (@turn = n), (@turn = none){ @var:none; }
+			.do(@turn) when (@turn = i), (@turn = initial){ @var:initial; }
+			.do(@turn) when (@turn = d), (@turn = decimal){ @var:decimal; }
+			.do(@turn) when (@turn = ld), (@turn = dz), (@turn = decimal-leading-zero){ @var:decimal-leading-zero; }
+			.do(@turn) when (@turn = a), (@turn = alpha){ @var:alpha; }
+			.do(@turn) when (@turn = ua), (@turn = upper-alpha){ @var:upper-alpha; }
+			.do(@turn) when (@turn = r), (@turn = lower-roman){ @var:lower-roman; }
+			.do(@turn) when (@turn = ur), (@turn = upper-roman){ @var:upper-roman; }
+			.do(@turn);
+			list-style-type:@var;
+		}
+		.condition(@turn) when (@turn = in), (@turn = inside), (@turn = o), (@turn = out), (@turn = outside), (@turn = df), (@turn = default){
+			.do(@turn) when (@turn = in), (@turn = inside){ @var:inside; }
+			.do(@turn) when (@turn = o), (@turn = out), (@turn = outside){ @var:outside; }
+			.do(@turn) when (@turn = df), (@turn = default){ @var:default; }
+			.do(@turn);
+			list-style-position:@var;
+		}
+		.condition(@turn);
+		.ls-loop(@index - 1);
+	}
+	.ls-loop(@index);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+///**********************************************************************************************************/
+// #
+// #       |                            o    o
+// #  ,---.|    ,---.,---.,---.    ,-.-...  ,.,---.
+// #  |   ||    ,---||    |---'    | | || >< ||   |
+// #  |---'`---'`---^`---'`---'    ` ' '`'  ```   '
+// #  |
+// #
+// #  about:			when you position an element it is common that you want to modify where the element
+// #					is located using top, right, bottom and left properties. this takes the concept of
+// #					margin and padding and extends it onto top, right, bottom and left. to skip a property
+// #					simply pass in a "n" for null and the mixin will not render that property
+// #
+// #  accepts: 			a max of four unit types separated via space in the order of TOP | RIGHT | BOTTOM | LEFT
+// #
+// #  full usage:		.placeTest{ .place(top|right|bottom|left); }
+// #
+// #  example:			.placeTest{ .place(1em n n 2em); }
+// #  output:			.placeTest{
+// #						top:1em;
+// #						left:2em;
+// #					}
+// #
+///**********************************************************************************************************/
+.place(@vars){
+	@index:length(@vars);
+	.place-loop(@index) when (@index > 0){
+		@turn:extract(@vars, @index);
+		.condition(@turn){
+			.do(@turn) when (@index = 1) and not (iskeyword(@turn)){ top:@turn; }
+			.do(@turn) when (@index = 2) and not (iskeyword(@turn)){ right:@turn; }
+			.do(@turn) when (@index = 3) and not (iskeyword(@turn)){ bottom:@turn; }
+			.do(@turn) when (@index = 4) and not (iskeyword(@turn)){ left:@turn; }
+			.do(@turn);
+		}
+		.condition(@turn);
+		.place-loop(@index - 1);
+	}
+	.place-loop(@index);
+}
+
+
+
+///**********************************************************************************************************/
+// #
+// #                                o    o
+// #  ,---..    ,,---.,---.    ,-.-...  ,.,---.
+// #  |   | \  / |---'|        | | || >< ||   |
+// #  `---'  `'  `---'`        ` ' '`'  ```   '
+// #
+// #  about:			the over mixin handles all over the overflow | overflow-x | overflow-y properties with
+// #					using simple keywords to render the value. "d" is the default value of overflow
+// #
+// #  accepts: 			multiable keywords without comma seperation or quotation;
+// #
+// #  short hand:		.overTest{ .over(v|h|s|a|d|i|xv|xh|xs|xa|xd|xi|yv|yh|ys|ya|yd|yi|touch|auto); }
+// #  full usage:		.overTest{ .over(visible|hidden|scroll|auto|initial|inherit|x-visible|x-hidden|x-scroll|x-auto|x-initial|x-inherit|y-visible|y-hidden|y-scroll|y-auto|y-initial|y-inherit); }
+// #
+// #  example:			.overTest{ .over(xh ys); }
+// #  output:			.overTest{
+// #						overflow-x:hidden;
+// #						overflow-y:scroll;
+// #					}
+// #
+///**********************************************************************************************************/
+.over(@vars){
+	@index:length(@vars);
+	.over-loop(@index) when (@index > 0){
+		@turn:extract(@vars, @index);
+		.condition(@turn) when (@turn = v), (@turn = visible), (@turn = h), (@turn = hidden), (@turn = s), (@turn = scroll), (@turn = a), (@turn = auto), (@turn = d), (@turn = initial), (@turn = i), (@turn = inherit){
+			.do(@turn) when (@turn = v), (@turn = visible){ @var:visible; }
+			.do(@turn) when (@turn = h), (@turn = hidden){ @var:hidden; }
+			.do(@turn) when (@turn = s), (@turn = scroll){ @var:scroll; }
+			.do(@turn) when (@turn = a), (@turn = auto){ @var:auto; }
+			.do(@turn) when (@turn = d), (@turn = initial){ @var:initial; }
+			.do(@turn) when (@turn = i), (@turn = inherit){ @var:inherit; }
+			.do(@turn);
+			overflow:@var;
+		}
+		.condition(@turn) when (@turn = xv), (@turn = x-visible), (@turn = xh), (@turn = x-hidden), (@turn = xs), (@turn = x-scroll), (@turn = xa), (@turn = x-auto), (@turn = xd), (@turn = x-initial), (@turn = xi), (@turn = x-inherit){
+			.do(@turn) when (@turn = xv), (@turn = x-visible){ @var:visible; }
+			.do(@turn) when (@turn = xh), (@turn = x-hidden){ @var:hidden; }
+			.do(@turn) when (@turn = xs), (@turn = x-scroll){ @var:scroll; }
+			.do(@turn) when (@turn = xa), (@turn = x-auto){ @var:auto; }
+			.do(@turn) when (@turn = xd), (@turn = x-initial){ @var:initial; }
+			.do(@turn) when (@turn = xi), (@turn = x-inherit){ @var:inherit; }
+			.do(@turn);
+			overflow-x:@var;
+		}
+		.condition(@turn) when (@turn = yv), (@turn = y-visible), (@turn = yh), (@turn = y-hidden), (@turn = ys), (@turn = y-scroll), (@turn = ya), (@turn = y-auto), (@turn = yd), (@turn = y-initial), (@turn = yi), (@turn = y-inherit){
+			.do(@turn) when (@turn = yv), (@turn = y-visible){ @var:visible; }
+			.do(@turn) when (@turn = yh), (@turn = y-hidden){ @var:hidden; }
+			.do(@turn) when (@turn = ys), (@turn = y-scroll){ @var:scroll; }
+			.do(@turn) when (@turn = ya), (@turn = y-auto){ @var:auto; }
+			.do(@turn) when (@turn = yd), (@turn = y-initial){ @var:initial; }
+			.do(@turn) when (@turn = yi), (@turn = y-inherit){ @var:inherit; }
+			.do(@turn);
+			overflow-y:@var;
+		}
+		.condition(@turn) when (@turn = touch), (@turn = auto){
+			.do(@turn) when (@turn = auto){ -webkit-overflow-scrolling:auto; }
+			.do(@turn) when (@turn = touch){ -webkit-overflow-scrolling:touch; }
+			.do(@turn);
+		}
+		.condition(@turn);
+		.over-loop(@index - 1);
+	}
+	.over-loop(@index);
+}
+
+
+
+///**********************************************************************************************************/
+// #
+// #          o         |                  o    o
+// #  ,---,   .,---.,---|,---..  ,    ,-.-...  ,.,---.
+// #   .-' ---||   ||   ||---' ><     | | || >< ||   |
+// #  '---'   ``   '`---'`---''  `    ` ' '`'  ```   '
+// #
+// #  about:			a true lazy mixin
+// #
+// #  accepts: 			single number that will define the layer
+// #
+// #  full usage:		.zIndexText{ .z(layer); }
+// #
+// #  example:			.zIndexText{ .z(1000); }
+// #  output:			.zIndexText{ z-index:1000; }
+// #
+///**********************************************************************************************************/
+.z(@x){
+	z-index:@x;
+}
+
+
+
+
+///**********************************************************************************************************/
+// #
+// #                     |                       o    o
+// # ,---.,---..   .,---.|--- ,---.,---.    ,-.-...  ,.,---.
+// # |    |   ||   ||   ||    |---'|        | | || >< ||   |
+// # `---'`---'`---'`   '`---'`---'`        ` ' '`'  ```   '
+// #
+// #  about:			creates a CSS counter on ordered lists
+// #
+// #  accepts:
+// #
+// #  full usage:
+// #
+// #  example:
+// #  output:
+// #
+///**********************************************************************************************************/
+.counter(@vars){
+	@index:length(@vars);
+
+	list-style:none;
+
+	.counter-loop(@index) when (@index > 0){
+		@turn:extract(@vars, @index);
+		.condition(@turn){
+			.do(@turn) when (@index = 1){
+				counter-reset:@turn;
+				> li:before{
+					content:counter(@turn)":"; counter-increment:@turn;
+				}
+
+			}
+			.do(@turn) when (@index = 2){
+				&:before{
+					right:@turn;
+				}
+			}
+			.do(@turn) when (@index = 3){ bottom:@turn; }
+			.do(@turn) when (@index = 4){ left:@turn; }
+			.do(@turn);
+		}
+		.condition(@turn);
+		.counter-loop(@index - 1);
+	}
+	.counter-loop(@index);
+}
+
+
+
+///**********************************************************************************************************/
+// #  |              |                                 |         o    o
+// #  |---.,---.,---.|__/ ,---.,---.,---..   .,---.,---|    ,-.-...  ,.,---.
+// #  |   |,---||    |  \ |   ||    |   ||   ||   ||   |    | | || >< ||   |
+// #  `---'`---^`---'`   ``---|`    `---'`---'`   '`---'    ` ' '`'  ```   '
+// #
+// #  about:			the background mixin accepts a wide variety of options in almost any order with keywords
+// #					that may proceed certain options such as background-position / background-size and gradient.
+// #  					this mixin unlike the others is slightly more strict in this mannor. see examples below.
+// #					in many cases you just passin the value you would normally do when not using this mixin.
+// #
+// #					gradients also exist in this mixin. they are the basic horizantal / vertical for now
+// #					with only the option to pass in two colors. there are plans to extend this further
+// #					but for now we offer only the basics of gradient. here is a great generator if you
+// #					are in the need of complex gradients: http://www.colorzilla.com/gradient-editor/
+// #
+// #  accepts: 			any combination of keywords, units, urls, and strings without comma seperation or
+// #  					quotation; special rules defined for background-position "pos" and background-size "size";
+// #
+// #  full usage:		.backgroundTest{ .bg(imageURL|color|position|size|repeat|attachment|origin|clip|gradient|color1|color2|hover|hor); }
+// #
+// #  example:			.backgroundTest{ .bg(url("url/example.svg") #fff pos 50% 90% size 1em 2em x f oc cb); }
+// #  output:			.backgroundTest{
+// #  						background-image: url("url/location.svg");
+// #  						background-color: #ffffff;
+// #  						background-position: 50% 90%;
+// #  						background-size: 1em 2em;
+// #  						background-repeat: repeat-x;
+// #  						background-attachment: fixed;
+// #  						background-origin: content-box;
+// #  						background-clip: border-box;
+// #					}
+// #
+// #  example:			.backgroundTest{ .bg(url("url/example.svg") x pos 50% 90%); }
+// #  output:			.backgroundTest{
+// #  						background-image: url("url/location.svg");
+// #  						background-repeat: repeat-x;
+// #  						background-position: 50% 90%;
+// #					}
+// #
+// #  example:			.backgroundTest{ .bg(url("url/example.svg") no pos top right size 1em 2em); }
+// #  output:			.backgroundTest{
+// #  						background-image: url("url/location.svg");
+// #  						background-repeat: no-repeat;
+// #  						background-position: top right;
+// #						background-size: 1em 2em;
+// #					}
+// #
+// #  example:			.backgroundTest{ .bg(size 1em 2em); }
+// #  output:			.backgroundTest{ background-size: 1em 2em; }
+// #
+// #  example:			.backgroundTest{ .bg(gradient #000 #fff); }
+// #  output:			.backgroundTest{
+// #						background-color: #666666;
+// #						background: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIHZpZXdCb3g9IjAgMCAxIDEiIHByZXNlcnZlQXNwZWN0UmF0aW89Im5vbmUiPjxsaW5lYXJHcmFkaWVudCBpZD0iZzc0MyIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMCUiIHkyPSIxMDAlIj48c3RvcCBzdG9wLWNvbG9yPSIjMDAwMDAwIiBvZmZzZXQ9IjAiLz48c3RvcCBzdG9wLWNvbG9yPSIjZmZmZmZmIiBvZmZzZXQ9IjEiLz48L2xpbmVhckdyYWRpZW50PjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9InVybCgjZzc0MykiLz48L3N2Zz4=");
+// #						background: -moz-linear-gradient(top, #000000 0%, #ffffff 100%);
+// #						background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #000000), color-stop(100%, #ffffff));
+// #						background: -webkit-linear-gradient(top, #000000, #ffffff);
+// #						background: -o-linear-gradient(top, #000000, #ffffff);
+// #						background: -ms-linear-gradient(top, #000000, #ffffff);
+// #						background: linear-gradient(to bottom, #000000, #ffffff);
+// #					}
+///**********************************************************************************************************/
+.bg(@vars){
+	@index:length(@vars);
+	@dataContent:null;
+	@dataPrefix:~'url("data:image/svg+xml;base64,';
+	@dataSuffix:~'")';
+	@b64Out:~`(function(a,b,c){function e(a){a=a.replace(/\r\n/g,'\n');var b='';for(var c=0;c<a.length;c++){var d=a.charCodeAt(c);if(d<128){b+=String.fromCharCode(d)}else if(d>127&&d<2048){b+=String.fromCharCode(d>>6|192);b+=String.fromCharCode(d&63|128)}else{b+=String.fromCharCode(d>>12|224);b+=String.fromCharCode(d>>6&63|128);b+=String.fromCharCode(d&63|128)}}return b}function f(a){var b='';var c,f,g,h,i,j,l;var m=0;a=e(a);while(m<a.length){c=a.charCodeAt(m++);f=a.charCodeAt(m++);g=a.charCodeAt(m++);h=c>>2;i=(c&3)<<4|f>>4;j=(f&15)<<2|g>>6;l=g&63;if(isNaN(f)){j=l=64}else if(isNaN(g)){l=64}b=b+d.charAt(h)+d.charAt(i)+d.charAt(j)+d.charAt(l)}return b}var d='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';return a+f(b)+c})('@{dataPrefix}','@{dataContent}','@{dataSuffix}')`;
+
+	.bg-loop(@index) when (@index > 0){
+		@turn:extract(@vars, @index);
+		@turn1:extract(@vars, @index + 1);
+		@turn2:extract(@vars, @index + 2);
+		@gradient:~`api.contains('@{vars}', 'gradient')`;
+		@horizontal:~`api.contains('@{vars}', 'hor')`;
+
+		.condition(@turn) when (@turn = none){ background:none; }
+		.condition(@turn) when (iscolor(@turn)) and not (@gradient = true){ background-color:@turn; }
+		.condition(@turn) when (isurl(@turn)) and not (@gradient = true){ background-image:@turn; }
+
+		.condition(@turn) when (@turn = yes), (@turn = no), (@turn = x), (@turn = y){
+			.do(@turn) when (@turn = yes){ background-repeat:repeat; }
+			.do(@turn) when (@turn = no){ background-repeat:no-repeat; }
+			.do(@turn) when (@turn = x){ background-repeat:repeat-x; }
+			.do(@turn) when (@turn = y){ background-repeat:repeat-y; }
+			.do(@turn);
+		}
+		.condition(@turn) when (@turn = scroll), (@turn = fixed), (@turn = s), (@turn = f){
+			.do(@turn) when (@turn = scroll), (@turn = s){ background-attachment:scroll; }
+			.do(@turn) when (@turn = fixed), (@turn = f){ background-attachment:fixed; }
+			.do(@turn);
+		}
+		.condition(@turn) when (@turn = pos){
+			.do(@turn){ background-position:@turn1 @turn2; }
+			.do(@turn);
+		}
+		.condition(@turn) when (@turn = size){
+			.do(@turn){ background-size:@turn1 @turn2; }
+			.do(@turn);
+		}
+		.condition(@turn) when (@turn = op), (@turn = ob), (@turn = oc), (@turn = od), (@turn = oi){
+			.do(@turn) when (@turn = op){ background-origin:padding-box; }
+			.do(@turn) when (@turn = ob){ background-origin:border-box; }
+			.do(@turn) when (@turn = oc){ background-origin:content-box; }
+			.do(@turn) when (@turn = od){ background-origin:initial; }
+			.do(@turn) when (@turn = oi){ background-origin:inherit; }
+			.do(@turn);
+		}
+		.condition(@turn) when (@turn = cp), (@turn = cb), (@turn = cc), (@turn = cd), (@turn = ci){
+			.do(@turn) when (@turn = cp){ background-clip:padding-box; }
+			.do(@turn) when (@turn = cb){ background-clip:border-box; }
+			.do(@turn) when (@turn = cc){ background-clip:content-box; }
+			.do(@turn) when (@turn = cd){ background-clip:initial; }
+			.do(@turn) when (@turn = ci){ background-clip:inherit; }
+			.do(@turn);
+		}
+		.condition(@turn) when (@turn = gradient), (@turn = g){
+			@startColor:@turn1;
+			@endColor:@turn2;
+			@hover:~`api.contains("@{vars}", "hover")`;
+
+			.then(@turn) when (@horizontal = true){
+				.do(@turn){
+					@dataContent:~'<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 1 1" preserveAspectRatio="none"><linearGradient id="g743" gradientUnits="userSpaceOnUse" x1="0%" y1="0%" x2="0%" y2="100%"><stop stop-color="@{startColor}" offset="0"/><stop stop-color="@{endColor}" offset="1"/></linearGradient><rect x="0" y="0" width="1" height="1" fill="url(#g743)"/></svg>';
+					background-color:mix(@startColor, @endColor, 60%);
+					background:~"@{b64Out}";
+					background:-moz-linear-gradient(left, @startColor 0%, @endColor 100%);
+					background:-webkit-gradient(linear, left top, right top, color-stop(0%, @startColor), color-stop(100%, @endColor));
+					.value(background, ~"linear-gradient(left, @{startColor}, @{endColor})", ~'webkit o ms');
+					filter:progid:DXImageTransform.Microsoft.gradient( startColorstr='@{startColor}', endColorstr='@{endColor}',GradientType=1 );
+				}
+				.do(@turn) when (@hover = true){
+					&:hover, &:active, &:focus{
+						@dataContent:~'<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 1 1" preserveAspectRatio="none"><linearGradient id="g743" gradientUnits="userSpaceOnUse" x1="0%" y1="0%" x2="0%" y2="100%"><stop stop-color="@{startColor}" offset="0"/><stop stop-color="@{endColor}" offset="1"/></linearGradient><rect x="0" y="0" width="1" height="1" fill="url(#g743)"/></svg>';
+						background-color:mix(@endColor, @startColor, 60%);
+						background:~"@{b64Out}";
+						background:-moz-linear-gradient(left, @endColor 0%, @startColor 100%);
+						background:-webkit-gradient(linear, left top, right top, color-stop(0%, @endColor), color-stop(100%, @startColor));
+						.value(background, ~"linear-gradient(left, @{endColor} 0%, @{startColor} 100%)", ~'webkit o ms');
+						filter:progid:DXImageTransform.Microsoft.gradient( startColorstr='@{startColor}', endColorstr='@{endColor}',GradientType=1 );
+					}
+				}
+				.do(@turn);
+			}
+			.then(@turn) when (@horizontal = false){
+				.do(@turn){
+					@dataContent:~'<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 1 1" preserveAspectRatio="none"><linearGradient id="g743" gradientUnits="userSpaceOnUse" x1="0%" y1="0%" x2="0%" y2="100%"><stop stop-color="@{startColor}" offset="0"/><stop stop-color="@{endColor}" offset="1"/></linearGradient><rect x="0" y="0" width="1" height="1" fill="url(#g743)"/></svg>';
+					background-color:mix(@startColor, @endColor, 60%);
+					background:~"@{b64Out}";
+					background:-moz-linear-gradient(top, @startColor 0%, @endColor 100%);
+					background:-webkit-gradient(linear, left top, left bottom, color-stop(0%, @startColor), color-stop(100%, @endColor));
+					.value(background, ~"linear-gradient(top, @{startColor}, @{endColor})", ~'webkit o ms');
+					filter:progid:DXImageTransform.Microsoft.gradient( startColorstr='@{startColor}', endColorstr='@{endColor}',GradientType=0 );
+
+				}
+				.do(@turn) when (@hover = true){
+					&:hover, &:active, &:focus{
+						@dataContent:~'<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 1 1" preserveAspectRatio="none"><linearGradient id="g743" gradientUnits="userSpaceOnUse" x1="0%" y1="0%" x2="0%" y2="100%"><stop stop-color="@{startColor}" offset="0"/><stop stop-color="@{endColor}" offset="1"/></linearGradient><rect x="0" y="0" width="1" height="1" fill="url(#g743)"/></svg>';
+						background-color:mix(@endColor, @startColor, 60%);
+						background:~"@{b64Out}";
+						background:-moz-linear-gradient(top, @endColor 0%, @startColor 100%);
+						background:-webkit-gradient(linear, left top, left bottom, color-stop(0%, @endColor), color-stop(100%, @startColor));
+						.value(background, ~"linear-gradient(top, @{endColor} 0%, @{startColor} 100%)", ~'webkit o ms');
+						filter:progid:DXImageTransform.Microsoft.gradient( startColorstr='@{endColor}', endColorstr='@{startColor}',GradientType=0 );
+					}
+				}
+				.do(@turn);
+			}
+			.then(@turn);
+		}
+		.condition(@turn);
+		.bg-loop(@index - 1);
+	}
+	.bg-loop(@index);
+}
+
+
+
+///**********************************************************************************************************/
+// #       o                   o    o
+// #  ,---..,---,,---.    ,-.-...  ,.,---.
+// #  `---.| .-' |---'    | | || >< ||   |
+// #  `---'`'---'`---'    ` ' '`'  ```   '
+// #
+// #  about:			the size mixin has two different input logics. first one allows for
+// #					a stright input of width | height mins and max values. the other allows for
+// #					a specifaction of which property to use. see examples for more info
+// #
+// #  accepts: 			multiable unit values in slots 1-6 or keywork / value specifaction
+// #
+// #  full usage:		.sizeTest{ .size(width|height|min-width|min-height|max-width|max-height|float|clear|center); }
+// #
+// #  example:			.sizeTest{ .size(100px 200px l center); } //direct input logic
+// #  example:			.sizeTest{ .size(w 100px h 200px l center); } //specific logic
+// #  output:			.sizeTest{
+// #						width: 100px;
+// #						height: 200px;
+// #						float: left;
+// #						margin: 0 auto;
+// #					}
+// #
+// #  example:			.sizeTest{ .size(n 200px n 50px clear); } //direct input logic
+// #  example:			.sizeTest{ .size(h 200px minh 50px clear); } //specific logic
+// #  output:			.sizeTest{
+// #						height: 200px;
+// #						min-height: 50px;
+// #						clear: both;
+// #					}
+// #
+// #  example:			.sizeTest{ .size(maxw 300px w 100px r); } //direct input logic
+// #  example:			.sizeTest{ .size(100px n n n 300px r); } //specific logic
+// #  output:			.sizeTest{
+// #						max-width: 300px;
+// #						width: 100px;
+// #						float: right;
+// #					}
+// #
+// #  other examples:	.sizeTest1{ .size2(1em r); }
+// #					.sizeTest2{ .size(1em 2em l); }
+// #					.sizeTest3{ .size(1em 2em 3em); }
+// #					.sizeTest4{ .size(1em 2em 3em 4em); }
+// #					.sizeTest5{ .size(1em 2em 3em 4em 5em); }
+// #					.sizeTest6{ .size(1em 2em 3em 4em 5em 6em); }
+// #					.sizeTest7{ .size(1em 2em 3em 4em 5em 6em r); }
+// #					.sizeTest8{ .size(n 2em); }
+// #					.sizeTest9{ .size(n 2em n); }
+// #					.sizeTest10{ .size(n 2em n 4em); }
+// #					.sizeTest11{ .size(n 2em n 4em n); }
+// #					.sizeTest12{ .size(n 2em n 4em n 6em); }
+// #					.sizeTest13{ .size(n 2em n 4em n 6em r); }
+// #					.sizeTest13{ .size(w 2em maxw 4em minh 6em r); }
+// #					.sizeTest13{ .size(h 2em r w 4em maxw 6em); }
+// #					.sizeTest13{ .size(minh 2em clear h 4em maxh 6em); }
+// #					.sizeTest13{ .size(l maxw 2em w 4em minw 6em); }
+///**********************************************************************************************************/
+.size(@vars){
+	@index:length(@vars);
+	@contains:~`api.contains('@{vars}', 'w h minw minh maxw maxh')`;
+
+	.size-loop(@index) when (@index > 0){
+		@turn:extract(@vars, @index);
+		@turn1:extract(@vars, @index + 1);
+		.condition(@turn) when (@contains = true){
+			.do(@turn) when (@turn = w){ width:@turn1; }
+			.do(@turn) when (@turn = h){ height:@turn1; }
+			.do(@turn) when (@turn = minw){ min-width:@turn1; }
+			.do(@turn) when (@turn = minh){ min-height:@turn1; }
+			.do(@turn) when (@turn = maxw){ max-width:@turn1; }
+			.do(@turn) when (@turn = maxh){ max-height:@turn1; }
+			.do(@turn);
+		}
+		.condition(@turn){
+			.do(@turn) when (@turn = l){ float:left; }
+			.do(@turn) when (@turn = r){ float:right; }
+			.do(@turn) when (@turn = no), (@turn = none){ float:none; }
+			.do(@turn) when (@turn = c), (@turn = clear){ clear:both; }
+			.do(@turn) when (@turn = center){ margin:0 auto; }
+			.do(@turn);
+		}
+		.condition(@turn) when (@turn = auto), (isunit(@turn, px)), (isunit(@turn, rem)), (isunit(@turn, "%")), (isunit(@turn, em)), (isunit(@turn, pt)){
+			.run(@turn) when (@contains = false){
+				.do(@turn) when (@index = 1){ width:@turn; }
+				.do(@turn) when (@index = 2){ height:@turn; }
+				.do(@turn) when (@index = 3){ min-width:@turn; }
+				.do(@turn) when (@index = 4){ min-height:@turn; }
+				.do(@turn) when (@index = 5){ max-width:@turn; }
+				.do(@turn) when (@index = 6){ max-height:@turn; }
+				.do(@turn);
+			}
+			.run(@turn);
+		}
+		.condition(@turn);
+		.size-loop(@index - 1);
+	}
+	.size-loop(@index);
+}
+
+
+
+///**********************************************************************************************************/
+// #            o    |         o    o
+// #  ,---.,---..,---|    ,-.-...  ,.,---.
+// #  |   ||    ||   |    | | || >< ||   |
+// #  `---|`    ``---'    ` ' '`'  ```   '
+// #  `---'
+// #
+// #
+// #  about:			the grid mixin is a love / hate relationship; if your are not fimiluar with grid concepts
+// #					such as bootstrap or foundation then this mixin may leave you behind. however this mixin
+// #					offers you the ability to define a single width (based off percentage) and it will automatically
+// #					calculate the needed percentages based off the width of your parent element.
+// #
+// #					this means that if you run a fixed width site based off pixels the grid will assume your
+// #					max-width of the container as the 100% values and thusly scale the values in accordiancents
+// #					to the max-width of your container.
+// #
+// #  accepts: 			multiable percentages without comma seperation or quotation; that are based off the max-width
+// #					of the parent container
+// #
+// #  short hand:		.gridTest{ .over(v|h|s|a|d|i|xv|xh|xs|xa|xd|xi|yv|yh|ys|ya|yd|yi|touch|auto); }
+// #  full usage:		.gridTest{ .over(visible|hidden|scroll|auto|initial|inherit|x-visible|x-hidden|x-scroll|x-auto|x-initial|x-inherit|y-visible|y-hidden|y-scroll|y-auto|y-initial|y-inherit); }
+// #
+// #  example:			.gridTest{ .grid(2); }
+// #  output:
+// #
+// #  usage:			.gridTest{ .grid(2); }
+// #					.gridTest{ .grid(3, even); }
+// #					.gridTest{ .grid(4, even, 4%); }
+// #					.gridTest{ .grid(2, 10% 90%); }
+// #					.gridTest{ .grid(3, 10% 40% 50%); }
+// #					.gridTest{ .grid(4, 10% 20% 30% 40%); }
+// #					.gridTest{ .grid(4, 10% 20% 30% 40%, 10%); } "LessMinded with assume 100% and scale widths to adjust for margins"
+// #
+///**********************************************************************************************************/
+.grid(@columns, @scale:even, @gap:none, @padd:0%, @html5:no){
+	@vars:~`"@arguments"`;
+	> div{ .boxed(); .size(left); }
+	.condition(@vars) when (@html5 = no){
+
+		.do(@vars) when (@scale = even) and (@gap = none){
+			@temp:percentage(1 / @columns);
+			.grid-loop(@i) when (@i > 0){
+				&:nth-child(@{i}), .col@{i}{ .size(@temp); }
+				.grid-loop(@i - 1);
+			}
+			.grid-loop(@columns);
+		}
+		.do(@vars) when (@scale = even) and not (@gap = none){
+			.when(@vars) when (@columns = 2){
+				@margin:(unit(@gap) / 100) / @columns;
+				@width:(1 / @columns) - (@margin * @columns);
+				.grid-loop(@i) when (@i > 0){
+					.top(@i) when (@i = @columns){ &:nth-child(@{i}), .col@{i}{ @edgeWidth:(@width + @margin); .size(percentage(@edgeWidth)); margin-left:percentage(@margin); } }
+					.top(@i) when (@i > 1) and (@i < @columns){ &:nth-child(@{i}), .col@{i}{ .size(percentage(@width)); margin:percentage(@margin); } }
+					.top(@i) when (@i = 1){ &:nth-child(@{i}), .col@{i}{ @edgeWidth:(@width + @margin); .size(percentage(@edgeWidth)); margin-right:percentage(@margin); } }
+					.top(@i);
+					.grid-loop(@i - 1);
+				}
+				.grid-loop(@columns);
+			}
+			.when(@vars) when (@columns > 2){
+				@margin:(unit(@gap) / 100);
+				@marginTotal:@margin * (@columns - 1);
+				@width:(1 / @columns);
+				@widthTotal:(1 - @marginTotal) / @columns;
+				.grid-loop(@i) when (@i > 0){
+					.top(@i) when (@i = @columns){ &:nth-child(@{i}), .col@{i}{ .size(percentage(@widthTotal)); margin-left:percentage(@margin); } }
+					.top(@i) when (@i > 1) and (@i < @columns){ &:nth-child(@{i}), .col@{i}{ .size(percentage(@widthTotal)); margin-left:percentage(@margin); } }
+					.top(@i) when (@i = 1){ &:nth-child(@{i}), .col@{i}{ .size(percentage(@widthTotal)); margin-left:0; } }
+					.top(@i);
+					.grid-loop(@i - 1);
+				}
+				.grid-loop(@columns);
+			}
+			.when(@vars);
+		}
+		.do(@vars) when (length(@scale) > 1) and (@gap = none){
+			.grid-loop(@i) when (@i > 0){
+				@temp:extract(@scale, @i);
+				&:nth-child(@{i}), .col@{i}{ .size(@temp); }
+				.grid-loop(@i - 1);
+			}
+			.grid-loop(@columns);
+		}
+		.do(@vars) when (length(@scale) > 1) and not (@gap = none){
+			@margin:(unit(@gap) / 100) / length(@scale);
+			@mar:(@margin / @columns);
+			.when(@vars){
+				.grid-loop(@i) when (@i > 0){
+					@width:(unit(extract(@scale, @i)) / 100);
+					.top(@i) when (@i = 1){ &:nth-child(@{i}), .col@{i}{ .size(percentage(@width)); } }
+					.top(@i) when not (@i = 1) and not (@i = @columns){ &:nth-child(@{i}), .col@{i}{ @newWidth:(@width - (@mar*2)); .size(percentage(@newWidth)); margin:0 percentage(@mar); } }
+					.top(@i) when (@i = @columns){ &:nth-child(@{i}), .col@{i}{ .size(percentage(@width)); } }
+					.top(@i);
+					.grid-loop(@i - 1);
+				}
+				.grid-loop(@columns);
+			}
+			.when(@vars);
+		}
+		.do(@vars);
+	}
+	.condition(@vars);
+}
+
+
+
+///**********************************************************************************************************/
+// #
+// #  |                  |                      /
+// #  |---.,---.,---.,---|,---.,---.,---.      /     ,---.,---.,---.,---.
+// #  |   ||   ||    |   ||---'|    `---.     /      |   ||   ||   ||---'
+// #  `---'`---'`    `---'`---'`    `---'    /       `   '`---'`   '`---'
+// #
+// #  about:			border is a mixin that quickly applys a default border to any element. This is
+// #					shared with the noBorder mixin that will apply a border to all edges except one.
+// #
+// #  accepts: 			comma seperated side, width, style and color.
+// #
+///**********************************************************************************************************/
+//lazy full border
+.b(@color, @width:1px, @style:solid){
+	border:@width @style @color;
+}
+
+.noBorder(@x, @width:1px, @style:solid, @color:#ccc){
+	.do(@x) when (@x = top), (@x = t){
+		border-right-width:@width; border-bottom-width:@width; border-left-width:@width;
+		border-right-style:@style; border-bottom-style:@style; border-left-style:@style;
+		border-right-color:@color; border-bottom-color:@color; border-left-color:@color;
+
+		-moz-border-bottom-colors:none !important;
+		-moz-border-left-colors:none !important;
+		-moz-border-right-colors:none !important;
+		-moz-border-bottom-colors:none !important;
+
+		border-color:-moz-use-text-color @color @color !important;
+		border-image:none !important;
+		border-style:none @style @style !important;
+		border-width:0px @width @width !important;
+	}
+	.do(@x) when (@x = right), (@x = r){
+		border-top-width:@width; border-bottom-width:@width; border-left-width:@width;
+		border-top-style:@style; border-bottom-style:@style; border-left-style:@style;
+		border-top-color:@color; border-bottom-color:@color; border-left-color:@color;
+
+		-moz-border-bottom-colors: none !important;
+		-moz-border-left-colors: none !important;
+		-moz-border-right-colors: none !important;
+		-moz-border-top-colors: none !important;
+
+		border-color: @color -moz-use-text-color @color @color !important;
+		border-image: none !important;
+		border-style: @style none @style @style !important;
+		border-width: @width 0 @width @width !important;
+	}
+	.do(@x) when (@x = bottom), (@x = b){
+		border-top-width:@width; border-right-width:@width; border-left-width:@width;
+		border-top-style:@style; border-right-style:@style; border-left-style:@style;
+		border-top-color:@color; border-right-color:@color; border-left-color:@color;
+
+		-moz-border-top-colors:none !important;
+		-moz-border-right-colors:none !important;
+		-moz-border-bottom-colors:none !important;
+		-moz-border-left-colors:none !important;
+
+		border-color:@color @color -moz-use-text-color !important;
+		border-image:none !important;
+		border-style:@style @style none !important;
+		border-width:@width @width 0 !important;
+	}
+	.do(@x) when (@x = left), (@x = l){
+		border-top-width:@width; border-bottom-width:@width; border-right-width:@width;
+		border-top-style:@style; border-bottom-style:@style; border-right-style:@style;
+		border-top-color:@color; border-bottom-color:@color; border-right-color:@color;
+
+		-moz-border-bottom-colors: none !important;
+		-moz-border-left-colors: none !important;
+		-moz-border-right-colors: none !important;
+		-moz-border-top-colors: none !important;
+
+		border-color: @color @color @color -moz-use-text-color !important;
+		border-image: none !important;
+		border-style: @style @style @style none !important;
+		border-width: @width @width @width 0 !important;
+
+	}
+	.do(@x);
+}
+
+
+
+
+
+
+///**********************************************************************************************************/
+// #
+// #  |    o|    |         |    o                   o    o
+// #  |--- .|--- |    ,---.|    .,---.,---.    ,-.-...  ,.,---.
+// #  |    ||    |    |---'|    ||   ||---'    | | || >< ||   |
+// #  `---'``---'`---'`---'`---'``   '`---'    ` ' '`'  ```   '
+// #
+// #  about:			titleline is a mixin that centers the title of an element with two equal lines on
+// #					each side that allows a great way to seperate content from one section to another.
+// #
+// #  accepts: 			comma seperated font-size, text and background color. your can over-ride the width
+// #					thickness and pattern by passing in the additional variables.
+// #
+// #  full usage:		.titleLine(15px, #ccc, #fff, 15%, 1px, dashed);
+// #
+// #  example:			h3{ .titleLineTest(15px, #ccc, #fff, 15%, 1px, dashed); }
+// #  output:			h3{
+// #						font-size:15px;
+// #						text-align:center;
+// #						display:block;
+// #						background-color:#ffffff;
+// #						color:#cccccc;
+// #					}
+// #					h3:before,
+// #					h3:after{
+// #						border:1px dashed #cccccc;
+// #						position:absolute;
+// #						width:15%;
+// #						margin-top:7.5px;
+// #						content:" ";
+// #					}
+// #					h3:before{
+// #						margin-left:-20%;
+// #					}
+// #					h3:after{
+// #						margin-left:5%;
+// #					}
+// #
+///**********************************************************************************************************/
+.titleLine(@fontsize, @text, @bgcolor, @width:15%, @thickness:1px, @pattern:solid){
+	@split:(@width/3);
+	@left:percentage((unit(@width+@split)*-1)/100);
+	@right:@split;
+
+	.txt(c @fontsize); .dis(b); .bg(@bgcolor); color:@text;
+	&:before, &:after{ border:@thickness @pattern @text; .pos(a); .size(@width); margin-top:unit(@fontsize/2, px); content:" "; }
+	&:before{ margin-left:@left;  }
+	&:after{ margin-left:@right; }
+}
+
+
+
+
+
+
+
+
+
+
+/******************************************************* visibility ***************/
+.v(@x){
+	.do(@x) when (@x = v), (@x = visible){ @var:visible; }
+	.do(@x) when (@x = h), (@x = hidden){ @var:hidden; }
+	.do(@x) when (@x = c), (@x = collapse){ @var:collapse; }
+	.do(@x) when (@x = i), (@x = initial){ @var:initial; }
+	.do(@x) when (@x = p), (@x = inherit){ @var:inherit; }
+	.do(@x);
+	visibility:@var;
+}
+/******************************************************* end visibility ***************/
+
+
+
+
+.select(@color, @bg:none){
+	@vars:~`"@arguments"`;
+	.condition(@vars) when (@color = none){
+		.do(@vars){ .property(user-select, none, ~'webkit moz o ms'); }
+		.do(@vars);
+	}
+	.condition(@vars) when not (@color = none){
+		.do(@vars){ ::-moz-selection{ .txt(@color); .bg(@bg); } ::selection{ .txt(@color); .bg(@bg); } }
+		.do(@vars);
+	}
+	.condition(@vars);
+	//required:	.property()
+	//usage:	.select(none);
+	//			.select(#fff, #000);
+}
+
+.vertical-text(@h:auto, @c:center, @p:no){
+	@vars:~`"@arguments"`;
+	.condition(@vars){
+		.do(@vars) when not (iskeyword(@p) = no){ padding:@p; }
+		.do(@vars) when (iskeyword(@c)){ .txt(@c); }
+		.do(@vars){ .size(n @h); .dis(tcell); vertical-align:middle; }
+		.do(@vars);
+	};
+	.condition(@vars);
+	//usage:	.vertical-text(30px, left, 10px 20px);
+}
+
+.rotate(@vars){
+	.property(transform, rotate(~"@{vars}deg"), ~"webkit moz o ms");
+	//requires:	.property()
+	//usage:	.rotate(180);
+}
+
+.flip(){
+	.property(transform, ~'scaleX(-1)', ~'webkit moz o ms'); filter:FlipH;
+	//requires:	.property()
+	//usage:	.flip();
+}
+
+.border-radius(@vars){
+	.property(border-radius, ~'@{vars}', ~'webkit moz');
+	background-clip:padding-box;
+	//requires:	.property()
+	//usage:	.border-radius(25px 25px 25px 25px);
+}
+
+.box-shadow(@vars){
+	.property(box-shadow, ~"@{vars}", ~'webkit moz');
+	//usage:	.box-shadow(1px 2px 3px 4px #fff);
+}
+
+.inner-shadow(@vars){
+	.box-shadow(inset ~"@{vars}");
+	//requires:	.box-shadow()
+	//usage:	.inner-shadow(1px 2px 3px 4px #fff);
+}
+
+.vertical-div(){
+	.property(transform, translateY(-50%), ~'webkit ms');
+	.pos(r); .place(50%);
+	//requires:	.property()
+	//usage:	.vertical-div();
+}
+
+.opacity(@factor){
+	@iefactor:@factor*100;
+	zoom:1;
+	filter:~"alpha(opacity=(@{iefactor}))";
+	.property(opacity, ~"@{factor}", ~"webkit moz");
+	//usage:	.opacity(.5);
+}
+
+.nav(){ list-style-type:none; padding:0; margin:0; overflow:hidden;
+	> li{ .dis(b); .size(l); .select-none();
+		&:last-child{ margin-right:0;
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+///**********************************************************************************************************/
+// #
+// #  			     ,---.     |        |              |
+// #  .   .,---.,---.|__. .   .|        |--- ,---.,---.|    ,---.
+// #  |   |`---.|---'|    |   ||        |    |   ||   ||    `---.
+// #  `---'`---'`---'`    `---'`---'    `---'`---'`---'`---'`---'
+// #
+// #
+// #
+///**********************************************************************************************************/
+
+
+
+
+
+
+
+///*********************************************************************************************************/
+// #
+// #                |o                             o
+// #  ,-.-.,---.,---|.,---.    ,---..   .,---.,---..,---.,---.
+// #  | | ||---'|   ||,---|    |   ||   ||---'|    ||---'`---.
+// #  ` ' '`---'`---'``---^    `---|`---'`---'`    ``---'`---'
+// #
+// #  usage:		@media @phone{ height:200px; };
+// #
+///*********************************************************************************************************/
+@phone:~'only screen and (min-device-width:320px) and (max-device-width:480px)';
+@phoneLand:~'only screen and (min-width:321px)';
+@phonePort:~'only screen and (max-width:320px)';
+@ipad:~'only screen and (min-device-width:768px) and (max-device-width:1024px)';
+@ipadLand:~'only screen and (min-device-width:768px) and (max-device-width:1024px) and (orientation:landscape)';
+@ipadPort:~'only screen and (min-device-width:768px) and (max-device-width:1024px) and (orientation:portrait)';
+@desk:~'only screen and (min-width:1224px)';
+@large:~'only screen and (min-width:1824px)';
+@iphone4:~'only screen and (-webkit-min-device-pixel-ratio:1.5), only screen and (min-device-pixel-ratio:1.5)';
+@iphone4retLand:~'(device-height:480px) and (-webkit-min-device-pixel-ratio:2) and (orientation:landscape)';
+@iphone4retPort:~'(device-height:480px) and (-webkit-min-device-pixel-ratio:2) and (orientation:portrait)';
+@iphone5:~'screen and (device-aspect-ratio:40/71)';
+@iphone5Land:~'screen and (device-aspect-ratio:40/71) and (orientation:landscape)';
+///*********************************************************************************************************/
+
+
+///**********************************************************************************************************/
+// #                 o|                  |              |
+// #  ,---.,---.,---..|--- ,---.    ,---.|---.,---.,---.|--- ,---.
+// #  `---.|   ||    ||    |---'    `---.|   ||---'|---'|    `---.
+// #  `---'|---'`    ``---'`---'    `---'`   '`---'`---'`---'`---'
+// #       |
+// #
+// #  UNDER DEVELOPMENT
+// #
+///**********************************************************************************************************/
+
+
+
+///**********************************************************************************************************/
+// #
+// #                 oo    o
+// #  ,---.,---.,---...    .,---.,---.,---.,---.
+// #  ,---|`---.|    ||    ||    |   ||   |`---.
+// #  `---^`---'`---'``    ``---'`---'`   '`---'
+// #
+///**********************************************************************************************************/
+.apple(){ &:before{ content:"F8FF"; } }
+.star(){ &:before{ content:"\2605"; } }
+.crossHair(){ &:before{ content:"\100CF"; } }			.crossHair2(){ &:before{ content:"\10122"; } }
+
+.play(){ &:before{ content:"\2023"; } }
+.playPause(){ &:before{ content:"\23EF"; } }
+.eject(){ &:before{ content:"\23CF"; } }
+.stop(){ &:before{ content:"\25A0"; } }
+
+.forward(){ &:before{ content:"\23E9"; } }				.rewind(){ &:before{ content:"\23EA"; } }
+.start(){ &:before{ content:"\23EE"; } }				.end(){ &:before{ content:"\23ED"; } }
+.waiting(){ &:before{ content:"\23F3"; } }
+.important(){ &:before{ content:"\2757"; } }
+.edit(){ &:before{ content:"\2710"; } }
+.check(){ &:before{ content:"\2713"; } }				.close(){ &:before{ content:"\2A2F"; } }
+.question(){ &:before{ content:"\2753"; } }				.question2(){ &:before{ content:"\FFFD"; } }
+
+.mail(){ &:before{ content:"\2709"; } }
+.tel(){ &:before{ content:"\260e"; } }
+
+.l-decor(){ &:before{ content:"\A9C1"; } }				.r-decor(){ &:before{ content:"\A9C2"; } }
+.l-arrow(){ &:before{ content:"\2906"; } }				.r-arrow(){ &:before{ content:"\2907"; } }
+.l-arrow2(){ &:before{ content:"\276E"; } }				.r-arrow2(){ &:before{ content:"\276f"; } }
+.l-dub-arrow(){ &:before{ content:"\300A"; } }			.r-dub-arrow(){ &:before{ content:"\300b"; } }
+
+.cir-num01(){ &:before{ content:"\2460"; } }			.cir-num02(){ &:before{ content:"\2461"; } }
+.cir-num03(){ &:before{ content:"\2462"; } }			.cir-num04(){ &:before{ content:"\2463"; } }
+.cir-num05(){ &:before{ content:"\2464"; } }			.cir-num06(){ &:before{ content:"\2465"; } }
+.cir-num07(){ &:before{ content:"\2466"; } }			.cir-num08(){ &:before{ content:"\2467"; } }
+.cir-num09(){ &:before{ content:"\2468"; } }			.cir-num10(){ &:before{ content:"\2469"; } }
+.cir-num11(){ &:before{ content:"\246a"; } }			.cir-num12(){ &:before{ content:"\246b"; } }
+.cir-num13(){ &:before{ content:"\246c"; } }			.cir-num14(){ &:before{ content:"\246d"; } }
+.cir-num15(){ &:before{ content:"\246e"; } }			.cir-num16(){ &:before{ content:"\246f"; } }
+.cir-num17(){ &:before{ content:"\2470"; } }			.cir-num18(){ &:before{ content:"\2471"; } }
+.cir-num19(){ &:before{ content:"\2472"; } }			.cir-num20(){ &:before{ content:"\2473"; } }
+
+.double-cir-num01(){ &:before{ content:"\24F5"; } }		.double-cir-num02(){ &:before{ content:"\24F6"; } }
+.double-cir-num03(){ &:before{ content:"\24F7"; } }		.double-cir-num04(){ &:before{ content:"\24F8"; } }
+.double-cir-num05(){ &:before{ content:"\24F9"; } }		.double-cir-num06(){ &:before{ content:"\24Fa"; } }
+.double-cir-num07(){ &:before{ content:"\24Fb"; } }		.double-cir-num08(){ &:before{ content:"\24Fc"; } }
+.double-cir-num09(){ &:before{ content:"\24Fd"; } }		.double-cir-num10(){ &:before{ content:"\24Fe"; } }
+
+
+
+///**********************************************************************************************************/
+// #       |             |
+// #  ,---.|---.,---.,---|,---.. . .,---.
+// #  `---.|   |,---||   ||   || | |`---.
+// #  `---'`   '`---^`---'`---'`-'-'`---'
+// #
+// #  UNDER DEVELOPMENT!
+// #
+///**********************************************************************************************************/
+// Transform MIXIN
+.transform (@val;@origin:0 0) {
+-webkit-transform:@val;
+-webkit-transform-origin:@origin;
+-moz-transform:@val;
+-moz-transform-origin:@origin;
+-ms-transform:@val;
+-ms-transform-origin:@origin;
+-o-transform:@val;
+-o-transform-origin:@origin;
+transform:@val;
+transform-origin:@origin;
+}
+@shadow:rgba(0, 0, 0, .50);
+
+.shadow(@vars){
+	@index:length(@vars);
+
+	.shadow-loop(@index) when (@index > 0){
+		@turn:extract(@vars, @index);
+		@turn1:extract(@vars, @index+1);
+
+		.condition(@turn) when (@turn = bloat){
+			.pos(r); .z(1);
+			&:after{ .dis(b); .pos(a); .txt(" "); .size(100% 20px); .place(n n 0); .z(-1);
+					 box-shadow:0px 10px 10px -5px @shadow; border-bottom-left-radius:50% 15px; border-bottom-right-radius:50% 15px;
+			}
+		}
+		.condition(@turn) when (@turn = float){
+			.pos(r);
+			&:after{ .dis(b); .pos(a); .place(n n 0); .size(100% 7px); .txt(" ");
+					 box-shadow:@turn1 0px 11px 10px 0px; border-radius:50%;
+			}
+		}
+		.condition(@turn) when (@turn = dogear){
+			.pos(r); .z(1);
+			&:after,&:before{ .pos(a); .dis(b); .txt(" "); .z(-1); .place(n n 0); .size(100% 70%); box-shadow:@shadow 0px 10px 10px -6px; }
+			&:after{ .place(n n n 0); border-bottom-right-radius:100% 30%; }
+			&:before{ .place(n 0); border-bottom-left-radius:100% 30%; }
+		}
+		.condition(@turn) when (@turn = cast){
+			.pos(r); .z(1);
+			&:after{ .pos(a); .dis(b); .txt(" "); .z(-1); .size(100% 20%); .place(n 0 0);
+					 background-image:linear-gradient(0deg, @shadow 0, rgba(0, 0, 0, 0) 100%);
+					 .transform(~"skewX(-45deg)"; 100% 100%);
+			}
+		}
+		.condition(@turn) when (@turn = fore){
+			.pos(r); .z(1);
+			&:after{
+				@height:20px;
+				.transform(~"skewX(45deg)"; 0 0);
+				background-image:linear-gradient(180deg, @shadow 0, rgba(0, 0, 0, 0) 100%);
+				.pos(a); .dis(b); .txt(" "); .z(-1); .size(n @height); .place(n 0 -@height 0);
+			}
+		}
+		.condition(@turn) when (@turn = glass){
+			.pos(r); .z(1);
+			&:after{
+				@height:20px;
+				.pos(a); .place(0 0 0 0); .dis(b); .txt(" ");
+				background-image:linear-gradient(45deg, rgba(0, 0, 0, 0.2) 50%, rgba(0, 0, 0, 0) 50%);
+			}
+		}
+		.condition(@turn) when (@turn = cube){
+			.pos(r);
+			@height:20px;
+			&:after,&:before{ .pos(a); .place(n 0 0); .size(100% 100%); .dis(b); .txt(" "); }
+			&:after{ .size(n @height); .place(-@height); .transform(~"skewX(-45deg)"; 0 100%); .bg(lighten(@shadow, 20%)); }
+			&:before{ .size(@height); .place(n -@height); .transform(~"skewY(-45deg)"; 0 100%); .bg(lighten(@shadow, 10%)); }
+		}
+		.condition(@turn) when (@turn = block){
+			.pos(r);
+			@height:20px;
+			&:after{ .place(-@height 0 n 0); .pos(a); .dis(b); .txt(" "); .size(100% 0);
+					 box-sizing:border-box;
+					 -moz-box-sizing:border-box;
+					 border:@height solid transparent;
+					 border-top:none;
+					 border-bottom:@height solid lighten(@shadow, 20%);
+			}
+		}
+		.condition(@turn) when (@turn = deco){
+			box-shadow:10px 10px 0 10px lighten(@shadow, 20%), -10px -10px 0 10px lighten(@shadow, 15%);
+		}
+		.condition(@turn);
+		.shadow-loop(@index - 1);
+	}
+	.shadow-loop(@index);
+	//usage:	.shadow(float #ccc);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+///**********************************************************************************************************/
+// #           o                       o
+// #  ,---.    .,---..  ,    ,---.,---..,---.,---.,---.,---.
+// #  ,---|    |,---| ><     `---.|   |||   ||   ||---'|
+// #  `---^    |`---^'  `    `---'|---'``   '`   '`---'`
+// #       `---'                  |
+// #
+// #
+// #  about:			the ajax spinner is one of many css3 animation effects. this resembled the apple osx
+// #					spinner animation and is a easy to impiment and fimiluar ajax load / wait.
+// #					simply utilize the supplied HTML structure below, wrap in a div of your chooseing
+// #					and call the mixin.
+// #
+// #  accepts: 			no need to pass in variables, this mixin is self sustaining
+// #
+// #  short hand:		.myWrapper{ .load_blocker() }
+// #
+// #  output:			too long to showcase
+// #
+// #  HTML:				Please the below HTML structure inside your wrapper
+// #					<div class='load_blocker'><div class='load_spinner'><div class='ajax-spinner-bars'><div class='bar-1'></div><div class='bar-2'></div><div class='bar-3'></div><div class='bar-4'></div><div class='bar-5'></div><div class='bar-6'></div><div class='bar-7'></div><div class='bar-8'></div><div class='bar-9'></div><div class='bar-10'></div><div class='bar-11'></div><div class='bar-12'></div><div class='bar-13'></div><div class='bar-14'></div><div class='bar-15'></div><div class='bar-16'></div></div></div></div>
+///**********************************************************************************************************/
+.spinner(){
+	.load_blocker{ .pos(f); .place(0 n n 0); .z(9999) !important; .bg(@text); .dis(b); .size(100% 100%); .opacity(.7);
+		.ajax-spinner-bars{ .pos(a); .size(1em 1em); .place(50% n n 50%); }
+		.ajax-spinner-bars > div{ .pos(a); .size(2px 10px); .bg(@bgcolor); .opacity(.05);
+		  -webkit-animation:fadeit 0.8s linear infinite;
+				  animation:fadeit 0.8s linear infinite;
+		}
+		@index:16;
+		.mixin-loop(@index) when (@index > 0){
+			.do(@index) when (@index = 1){
+				@deg:0;
+				@sec:0.05;
+			}
+			.do(@index) when not (@index = 1){
+				@deg:(22.5 * (@index - 1));
+				@sec:round(0.05 + (0.05 * (@index - 1)), 2);
+			}
+			.do(@index);
+			.ajax-spinner-bars > .bar-@{index}{
+				.property(transform, rotate(~"@{deg}deg") translate(0, -12px), ~"webkit ms") !important;
+				.property(animation-delay, ~"@{sec}s", ~"webkit") !important;
+			}
+			.mixin-loop(@index - 1);
+		}
+		.mixin-loop(@index);
+
+		@-webkit-keyframes fadeit{
+			0%{ .opacity(1); }
+			100%{ .opacity(0); }
+		}
+		@keyframes fadeit{
+			0%{ .opacity(1); }
+			100%{ .opacity(0); }
+		}
+	}
+}
+///**********************************************************************************************************/
