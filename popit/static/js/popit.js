@@ -9,16 +9,30 @@ var com = {
 		});
 	},
 	checkApiEvents: function(api){
-		if(!$.isEmptyObject(api.doc)){ $.each(api.doc, function(k,v){ if(com.type(v) === "function"){ $.e.doc[k].push(v); } }); }
-		if(!$.isEmptyObject(api.win)){ $.each(api.win, function(k,v){ if(com.type(v) === "function"){ $.e.win[k].push(v); } }); }
+		var _this = this;
+		if(!$.isEmptyObject(api.doc)){
+
+			$.each(api.doc, function(k,v){
+				if(_this.type(v) === "function"){
+					$.e.doc[k].push(v);
+				}
+			});
+		}
+		if(!$.isEmptyObject(api.win)){
+			$.each(api.win, function(k,v){
+				if(_this.type(v) === "function"){
+					$.e.win[k].push(v);
+				}
+			});
+		}
 	},
 	type: function(name){
-		switch(name){
+		switch(typeof name){
 			case "function": return "function"; break;
 			case "object": if($.isArray(name)){return "array"; }else{ return "object"; } break;
 			case "string": return "string"; break;
 			case "number": if(!isNaN(name)){ return "number"; }else{ return "string"; } break;
-			case '': case "undefined": default: return "undefined"; break;
+			case "": case "undefined": default: return "undefined"; break;
 		}
 	},
 };
@@ -116,7 +130,7 @@ var popitHelper = {
 					modalX: false,
 					exposeClose: false,
 					closeBtnFunc: function(){
-						$.go.reload();
+						window.location.reload();
 					}
 				});
 				clearInterval(1800);
@@ -132,7 +146,6 @@ var popitHelper = {
 					"invalidItem"			//full cart
 				];
 				if(bypass.indexOf($("#formHandlerError").val()) > -1){
-					// console.log("popit bypass");
 				}else{
 					$.popit.alert("error", {
 						data: $("#errorMessage").val(),

@@ -62,13 +62,11 @@
 
 <body>
 
-	<p><a href="javascript:void:(0);" data-popit="testing" data-info='{ "data":"a test modal" }'>Generic Link</a></p>
-	<p><a href="javascript:void:(0);" data-popit="testing2" data-info='{ "data":"a different test modal" }'>Generic Link2</a></p>
-
-
+	<p><a href="javascript:void(0);" data-popit="testing" data-info='{ "data":"a test modal" }'>Generic Link</a></p>
+	<p><a href="javascript:void(0);" data-popit="testing2" data-info='{ "data":"a different test modal" }'>Generic Link2</a></p>
 
 	<script src="static/js/jsrender-min.js"></script>
-	<script src="static/js/popit-min.js"></script>
+	<script src="static/js/popit.js"></script>
 
 	<script type="text/javascript">
 	//This JS file must load last across the entire system - it controls all custom events, document ready and window binginds throughout.
@@ -80,7 +78,11 @@
 	};
 
 	//new plugins have api's and push events with these functions
-	$(document).ready(function(){for(var i = 0; i < $.e.doc.ready.length; i++){ $.e.doc.ready[i](); };});
+	$(document).ready(function(){
+		for(var i = 0; i < $.e.doc.ready.length; i++){
+			$.e.doc.ready[i]();
+		};
+	});
 
 	$(window).on({
 		load:function(){for(var i = 0; i < $.e.win.load.length; i++){ $.e.win.load[i](); };},
