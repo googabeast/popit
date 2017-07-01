@@ -3,51 +3,60 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<title>$.popit()</title>
-
-	<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 	<link href="static/css/common.css" rel="stylesheet" type="text/css"/>
 
+	<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 	<script type="text/javascript">
 	$.e = {
 		doc: { ready:[], custom:[] },
 		win: { scroll:[], load:[], resize:[], resizestop:[], orientationchange:[] }
 	};
 
-	com = {
-		load: function(templat, $div, obj, append, callback){
-			$.get(templat, function(value){
-				$.templates("tmpl", value);
-				var html = $.render.tmpl(obj);
+	(function($){
+		var slice = Array.prototype.slice;
+		$.extend($.event.special,{
 
-				if(append){
-					$div.append(html);
-				}else{
-					$div.html(html);
-				};
-				$("select, input[type='radio'], input[type='checkbox']").uniform();
-			}).done(function(){
-				if(callback !== undefined){
-					callback();
-				};
-			}).fail(function(error){});
-		},
-		checkApiEvents: function(api){
-			if(!$.isEmptyObject(api.doc)){
-				$.each(api.doc, function(k,v){
-					if(typeof v == "function"){
-						$.e.doc[k].push(v);
-					};
-				});
-			};
-			if(!$.isEmptyObject(api.win)){
-				$.each(api.win, function(k,v){
-					if(typeof v == "function"){
-						$.e.win[k].push(v);
-					};
-				});
-			};
-		}
-	};
+			resizestop:{
+				add: function(handle){
+					var handler = handle.handler;
+
+					$(this).resize(function(e){
+						clearTimeout(handler._timer);
+						e.type = "resizestop";
+
+						var _proxy = $.proxy(handler, this, e);
+						handler._timer = setTimeout(_proxy, handle.data || 200);
+					});
+				}
+			},
+			resizestart:{
+				add: function(handle){
+					var handler = handle.handler;
+
+					$(this).on("resize", function(e){
+						clearTimeout(handler._timer);
+						if (!handler._started) {
+							e.type = "resizestart";
+							handler.apply(this, arguments);
+							handler._started = true;
+						}
+						handler._timer = setTimeout($.proxy(function(){
+							handler._started = false;
+						}, this), handle.data || 300);
+					});
+				}
+			}
+		});
+
+		$.extend($.fn, {
+			resizestop: function() {
+				$(this).on.apply(this, ["resizestop"].concat(slice.call(arguments)));
+			},
+			resizestart: function() {
+				$(this).on.apply(this, ["resizestart"].concat(slice.call(arguments)));
+			}
+		});
+	})(jQuery);
 	</script>
 </head>
 
@@ -58,8 +67,9 @@
 
 
 
+	<script src="static/js/jsrender-min.js"></script>
+	<script src="static/js/popit-min.js"></script>
 
-	<script src="static/js/popit.js"></script>
 	<script type="text/javascript">
 	//This JS file must load last across the entire system - it controls all custom events, document ready and window binginds throughout.
 
