@@ -1,12 +1,56 @@
 var com = {
-	load: function(template, $el, obj, append, callback){
+	jsload: function(template, $el, obj, append, callback){
+		var _this = this;
+
 		$.get(template, function(value){
 			$.templates("tmpl", value);
 			var html = $.render.tmpl(obj);
 			if(append){ $el.append(html); }else{ $el.html(html); }
 		}).done(function(){
-			if(callback !== undefined && com.type(callback) === "function"){ callback(); }
+			if(callback !== undefined && _this.type(callback) === "function"){ callback(); }
 		});
+	},
+	waitForIt:function($el, callback){
+		var _this = this,
+			ignoreUrl = [
+				"/ajax/directIgnore.html"
+			];
+
+		if($el === undefined || $el === "page"){ $el = $("body"); }
+		if($el.get(0) !== $("body").get(0)){ $el.css({"position":"relative"}); }
+
+
+		$(document).ajaxSend(function(x, y, z){
+			function checkUrl(){
+				var ignorePartial = [
+					"testIgnore"
+				];
+				for(var i = 0; i < ignorePartial.length; i++){
+					if(z.url.indexOf(ignorePartial[i]) <= 0){
+					}else{
+						return true;
+					}
+				}
+			}
+
+			if($(".waitForIt").length <= 0){
+				if(ignoreUrl.indexOf(z.url) <= 0){
+					if(!checkUrl()){
+						$el.append("<div class='waitForIt' />");
+					}
+				}
+			}
+		});
+		$(document).ajaxStop(function(){
+			setTimeout(function(){
+				$.waitForIt.close();
+				$("#addItem").removeAttr("disabled").removeAttr("style");
+			}, 1000);
+		});
+
+		// $(document).ajaxComplete(function(){});
+
+		if(_this.type(callback) === "function"){ callback(); }
 	},
 	checkApiEvents: function(api){
 		var _this = this;
@@ -27,16 +71,42 @@ var com = {
 		}
 	},
 	type: function(name){
+		var itis = "";
 		switch(typeof name){
-			case "function": return "function"; break;
-			case "object": if($.isArray(name)){return "array"; }else{ return "object"; } break;
-			case "string": return "string"; break;
-			case "number": if(!isNaN(name)){ return "number"; }else{ return "string"; } break;
-			case "": case "undefined": default: return "undefined"; break;
+			case "function":itis="function";break;
+			case "object":if($.isArray(name)){itis="array";}else{itis="object";}break;
+			case "string":itis="string"; break;
+			case "number":if(!isNaN(name)){ itis="number";}else{itis="string";}break;
+			case "":case "undefined":itis="undefined";break;
+			default:itis="undefined";break;
 		}
+		return itis;
 	},
 };
 
+com.waitForIt();
+$.waitForIt = {
+	html: "<div class='waitForIt' style='position:absolute;z-index:8000;' />",
+	close: function(){
+		$(document).find(".waitForIt").fadeOut(function(){
+			if($(this).parent().hasClass("saveCart")){
+				$(this).parent().removeAttr("style");
+			}
+			//revisit
+			// $(this).parent().css({ position: /(absolute|relative)/.test() ? position : "inherit" });
+			$(this).remove();
+		});
+	},
+	me: function($el, relative){
+		if($(".waitForIt").length <= 0){
+			if(relative){
+				$el.css({"position":"relative"}).append(this.html);
+			}else{
+				$el.append(this.html);
+			}
+		}
+	}
+};
 
 
 
@@ -224,7 +294,16 @@ var popitHelper = {
 					}else{
 
 						//search data for iframes and forms
-						api.iframe = ($(data).find("iframe").length > 0)? true : false;
+						api.iframe = ($(data).filter("iframe").length > 0 || $(data).find("iframe").length > 0)? true : false;
+						if(api.iframe){
+							if($(data).filter("iframe").length > 0){
+								api.iframe = $(data).filter("iframe");
+							}
+							if($(data).find("iframe").length > 0){
+								api.iframe = $(data).find("iframe");
+							}
+						}
+
 						api.form = ($(data).find("form").length > 0)? true : false;
 						api.successMsg = ($(data).find(".successResponse").length > 0)? $(data).find(".successResponse").html() : null;
 
@@ -279,7 +358,7 @@ var popitHelper = {
 		}
 
 		//show a close button at the top of the modal
-		var modalX = (api.opts.modalX)? "<a role='button' aria-label='Close modal' href='javascript:void(0);' class='close'></a>" : "";
+		var modalX = (api.opts.modalX)? "<a role='button' aria-label='Close modal' href='javascript:void(0);' class='close'>&otimes;</a>" : "";
 		//show a close button at the bottom of the modal
 		var closeBtn = (api.opts.closeBtn)? "<a class='closeModal redBtn fakeBtn'>"+api.opts.closeBtn+"</a>" : "";
 
@@ -345,10 +424,10 @@ var popitHelper = {
 			_this.exceptions.dialog(api);
 		}
 
-		//check for any iframes and wait for it spinner to finish loading
-		if(api.iframe){
+		//check for any iframes and $waitForIt() spinner to finish loading
+		if(!$.isEmptyObject(api.iframe)){
 			$.waitForIt.me(api.$modal);
-			_this.$wrap.find("iframe").load(function(){
+			api.iframe.load(api.iframe.attr("src"), function(){
 				$.waitForIt.close();
 			});
 		}
@@ -644,7 +723,7 @@ com.checkApiEvents($.popit.helper);
 	});
 */
 $.popit.x.dialog = function(api){
-	com.load("/static/templates/dialog.htm", api.$modal.find("#modalData"), api.opts, true);
+	com.jsload("/static/templates/dialog.htm", api.$modal.find("#modalData"), api.opts, true);
 
 	$(document).on("click", ".dialog"+api.opts.continue.class+"Btn", function(e){
 		e.preventDefault();
