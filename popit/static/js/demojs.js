@@ -1,0 +1,8 @@
+function callAlert(){
+
+};
+
+
+function callDialog(){
+
+};

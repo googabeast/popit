@@ -70,6 +70,25 @@
 		"oF": 0,
 		"oS": 3
 		},
+	"\/img\/svg\/loader.svg": {
+		"ft": 2097152,
+		"miP": 0,
+		"oA": 2,
+		"oAP": "\/img\/svg\/loader.svg",
+		"oF": 0,
+		"opt": 0,
+		"plM": 3758088159,
+		"prP": 0
+		},
+	"\/js\/demojs.js": {
+		"ft": 64,
+		"mi": 0,
+		"oA": 1,
+		"oAP": "\/js\/demojs-min.js",
+		"oF": 1,
+		"sC": 0,
+		"tS": 0
+		},
 	"\/js\/jsrender-min.js": {
 		"ft": 64,
 		"mi": 0,
