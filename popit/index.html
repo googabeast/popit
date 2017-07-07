@@ -3,13 +3,14 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<title>$.popit()</title>
-	<link href="static/css/common.css" rel="stylesheet" type="text/css"/>
 
+	<link href="static/css/common.css" rel="stylesheet" type="text/css"/>
 	<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
 	<script type="text/javascript">
 	$.e = {
 		doc: { ready:[], custom:[] },
-		win: { scroll:[], load:[], resize:[], resizestop:[], orientationchange:[] }
+		win: { scroll:[], load:[], resize:[], resizestart:[], resizestop:[], orientationchange:[] }
 	};
 
 	(function($){
@@ -61,6 +62,7 @@
 </head>
 
 <body>
+<!--
 	<h1>$.popit() Modal Control</h1>
 
 	<h2>Features:</h2>
@@ -70,7 +72,11 @@
 				<li>Easy to modify modal behavious utilizing data-info attributes utilizing JSON</li>
 			</ul>
 		</li>
-		<li>Named exceptions from default.name allowing for easy modifacations of specific modals</li>
+		<li>Named exceptions from default.name allowing for easy modifacations of specific modals
+			<ul>
+				<li>Session timeout example after 30mins using $.popit.alert()</li>
+			</ul>
+		</li>
 		<li>Easy JS shorthand refference to object refferences:
 			<ul>
 				<li>$.popit.open()</li>
@@ -104,20 +110,22 @@
 		<li>JQuery 3.2.1 (future testing for below versions will occur)</li>
 		<li><a href="https://www.jsviews.com/#download" target="_blank">JSRender</a> for various custom templates used such as "dialog."</li>
 	</ul>
-
+-->
 	<h2>Examples of direct HTML utilization:</h2>
 	<ol>
+		<li><a href="javascript:void(0);" data-popit="onpageContent" data-info='{"target":"#onpage"}'>On page Popup</a></li>
 		<li><a href="javascript:void(0);" data-popit="genericPopup" data-info='{ "data":"a test modal" }'>Generic Popup</a></li>
 		<li><a href="javascript:void(0);" data-popit="ajaxExample" data-info='{ "href":"ajax/example.html" }'>Generic Ajax</a></li>
 		<li><a href="javascript:void(0);" data-popit="ajaxIframe" data-info='{ "href":"ajax/iframe.html" }'>Generic iframe</a></li>
+		<li><a href="javascript:void(0);" data-popit="siteFeedback" data-info='{"href":"ajax/siteFeedback.html","css":"siteFeedbackModal"}'>Site Feedback</a></li>
 	</ol>
 
 
-
+	<div id="onpage" style="display:none;">On page content popup</div>
 
 
 	<script src="static/js/jsrender-min.js"></script>
-	<script src="static/js/popit-min.js"></script>
+	<script src="static/js/popit.js"></script>
 	<script src="static/js/demojs.js"></script>
 
 	<script type="text/javascript">

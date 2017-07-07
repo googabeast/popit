@@ -12,11 +12,19 @@
 
 ### _more coming soon_
 
-From a HTML link
+HTML link with a simple message.
 
 ```html
-<a href="javascript:void(0)" data-popit="myUniqueName" data-info='{ "data":"A simple HTML popup" }'>A html simple popup</a>
+<a data-popit="simpleMessage"
+	data-info='{"data":"A simple HTML popup"}'
+	href="#" aria-haspopup="true">A html simple popup</a>
 ```
+
+```html
+<a data-popit="siteFeedback"
+	data-info='{"href":"/ajax/siteFeedback.html","cssClass":"siteFeedbackModal"}'
+	href="#" aria-haspopup="true">Site Feedback</a>
+
 
 From Javascript
 

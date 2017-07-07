@@ -1,4 +1,15 @@
+/*
+-add a title to the modal window (optional pass-in)
+-add notify options, window top, bottom, left, right
+-add automatic close after so many seconds
+-add maximize modal window button
+*/
+
+
+
+
 var com = {
+	timeout: 1800, //is 30mins
 	jsload: function(template, $el, obj, append, callback){
 		var _this = this;
 
@@ -26,8 +37,7 @@ var com = {
 					"testIgnore"
 				];
 				for(var i = 0; i < ignorePartial.length; i++){
-					if(z.url.indexOf(ignorePartial[i]) <= 0){
-					}else{
+					if(z.url.indexOf(ignorePartial[i]) > -1){
 						return true;
 					}
 				}
@@ -74,7 +84,17 @@ var com = {
 		var itis = "";
 		switch(typeof name){
 			case "function":itis="function";break;
-			case "object":if($.isArray(name)){itis="array";}else{itis="object";}break;
+			case "object":
+				if($.isArray(name)){
+					itis="array";
+				}else{
+					if(name instanceof jQuery){
+						itis="jquery";
+					}else{
+						itis="object";
+					}
+				}
+			break;
 			case "string":itis="string"; break;
 			case "number":if(!isNaN(name)){ itis="number";}else{itis="string";}break;
 			case "":case "undefined":itis="undefined";break;
@@ -124,10 +144,12 @@ $.waitForIt = {
 +------------------------------+    template: an ajax call that loads a htm template from '/static/templates'
 |                              |              then runs JSRender to pass in the needed variables. Use with 'info' obj below.
 |  Passin Variables            |
+|     *dev* - structure = ''   |    structure: although the modal structure is rather simple this option allows you to pass in a new structure
+|     target = ''              |    target: this clones an existing element on the page into a modal, pass in the JQuery selector (must be unique) ex: "#myModal" or ".myModal"
 |     template = ''            |    href: an ajax call that can point to any file in the system
 |     href = ''                |    data: *Not ajax 'data'*. This is used usually as a string to pass in simple messages
-|     data = ''                |    css: a unique CSS class to help style the modal / contents
-|     css = ''                 |    style: the actually style attribute of the $container, usually used for modal width
+|     data = ''                |    cssClass: a unique CSS class to help style the modal / contents
+|     cssClass = ''            |    style: the actually style attribute of the $container, usually used for modal width
 |     style = ''               |    form: *This IS ajax 'data'. Usually in the format of a serilized form assed in as 'api.opts.form'
 |     form = {}                |
 |                              |    info: an object that us used in conjunction with 'template'. This object is passed to JSRender
@@ -184,18 +206,18 @@ var popitHelper = {
 				popitHelper.info = $.parseJSON(sessionStorage.getItem("popit"));
 
 				$.popit.open(popitHelper.info.name, {
-					css: "refreshedModal",
+					cssClass: "refreshedModal",
 					href: "/browse/templates/bcc.jsp?id="+popitHelper.info.bcc
 				});
 
 				sessionStorage.removeItem("popit");
 			}
 
-			if(sessionStorage.getItem("sessionTimeout")){
+			if(sessionStorage.getItem("sessionTimeout") !== null){
 				var sessionDate = sessionStorage.getItem("sessionTimeout");
 				$.popit.alert("sessionTimeout", {
 					data: "<p style='text-align:center;'>Your session expired due to inactivity on "+sessionDate+".<br/>To continue click the 'OK' button below.</p>",
-					css: "informationModal",
+					cssClass: "informationModal",
 					closeBtn: "Ok",
 					modalX: false,
 					exposeClose: false,
@@ -203,7 +225,7 @@ var popitHelper = {
 						window.location.reload();
 					}
 				});
-				clearInterval(1800);
+				com.timeout = null;
 				sessionStorage.removeItem("sessionTimeout");
 			}
 
@@ -219,7 +241,7 @@ var popitHelper = {
 				}else{
 					$.popit.alert("error", {
 						data: $("#errorMessage").val(),
-						css: "informationModal",
+						cssClass: "informationModal",
 						closeBtn: "Close",
 						modalX: false,
 						exposeClose: false,
@@ -362,8 +384,13 @@ var popitHelper = {
 		//show a close button at the bottom of the modal
 		var closeBtn = (api.opts.closeBtn)? "<a class='closeModal redBtn fakeBtn'>"+api.opts.closeBtn+"</a>" : "";
 
-		//_this will be the append into the modal container div at the end of page
-		_this.$wrap.append("<div id='"+api.defaults.name+"' class='popup "+api.opts.css+"' style='visibility:hidden;"+api.opts.style+"'>"+modalX+"<div id='modalData'></div>"+closeBtn+"</div>");
+		//if target is passed in then pull the data from the selector and append into modal
+		var targetContent = (api.opts.target)? $(api.opts.target).html() : "";
+
+		//_this will be the append into the modal container div at the end of page **under development**
+		var structureDefault = "<div id='"+api.defaults.name+"' class='popup "+api.opts.css+"' style='visibility:hidden;"+api.opts.style+"'>"+modalX+"<div id='modalData'>"+targetContent+"</div>"+closeBtn+"</div>";
+		var structure = (api.opts.structure)? "" : structureDefault;
+		_this.$wrap.append(structure);
 
 		//hide / show expose background
 		if(api.opts.expose){
@@ -420,9 +447,7 @@ var popitHelper = {
 		}
 
 		//always check for dialog insertion
-		if(api.opts.dialog === true){
-			_this.exceptions.dialog(api);
-		}
+		if(api.opts.dialog){ _this.exceptions.dialog(api); }
 
 		//check for any iframes and $waitForIt() spinner to finish loading
 		if(!$.isEmptyObject(api.iframe)){
@@ -431,7 +456,6 @@ var popitHelper = {
 				$.waitForIt.close();
 			});
 		}
-
 
 		//center the modal
 		_this.center(api);
@@ -485,7 +509,7 @@ function popit(el, opts){
 		aria: true,
 		cache: true,
 		delay: 0,
-		css: "",
+		cssClass: "",
 		modalX: true,
 		expose: true,
 		exposeClose: true,
@@ -685,7 +709,14 @@ $.fn.popit = function(opts){
 		e.stopImmediatePropagation();
 
 		if(api.opts.aria !== "false"){ $.popit.helper.aria($input); }
-		$.popit.helper.fetch(api);
+
+console.log(api);
+		if(api.opts.target !== undefined){
+			$.popit.helper.create(api);
+		}else{
+			$.popit.helper.fetch(api);
+		}
+
 	});
 
 	//closes active modal
@@ -703,7 +734,86 @@ com.checkApiEvents($.popit.helper);
 
 
 
-/******************************************************* request dialog functions ***************/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/******************************************************* session timeout ***************/
+$.popit.x.sessionWarning = function(api){
+	var info = {
+		runLast: function(){
+			var $count = $(".countDown"),
+				time = 60;
+
+			function out(){
+				clearInterval(com.sessionTime);
+				sessionStorage.setItem("sessionTimeout", new Date().toLocaleString());
+				window.location.reload();
+			}
+
+			com.sessionTime = setInterval(function(){
+				--time;
+				if(time === 0){
+					out(com.sessionTime);
+				}else{
+					$count.text(time);
+				}
+			}, 1000);
+		}
+	};
+	api.opts = $.extend({}, api.opts, info);
+};
+
+$.e.doc.ready.push(function(){
+	if(com.timeout === null){
+		return true;
+	}
+	setTimeout(function(){
+		$.popit.alert("sessionWarning", {
+			data: "Your session is about to expire in <span class='countDown' style='font-weight:bold;'>60</span> seconds, to continue please click 'OK' below.",
+			css: "informationModal",
+			closeBtn: "OK",
+			modalX: false,
+			exposeClose: false,
+			closeBtnFunc: function(){
+				window.location.reload();
+			}
+		});
+	}, (com.timeout*1000));
+});
+/******************************************************* end session timeout ***************/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/******************************************************* dialog functions ***************/
 /*
 	$.popit.dialog("example", {
 		data: "example dialog",
@@ -741,7 +851,7 @@ $.popit.x.dialog = function(api){
 		api.opts.close.func(api, $(this), e);
 	});
 };
-/******************************************************* end request dialog functions ***************/
+/******************************************************* end dialog functions ***************/
 
 
 
