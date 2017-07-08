@@ -872,3 +872,6 @@ $.popit.x.customEvents = function(api){
 /******************************************************* end custom event binding ***************/
 
 
+
+
+

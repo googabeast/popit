@@ -6,59 +6,9 @@
 
 	<link href="static/css/common.css" rel="stylesheet" type="text/css"/>
 	<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+	<script src="static/js/loadFirst.js"></script>
 
-	<script type="text/javascript">
-	$.e = {
-		doc: { ready:[], custom:[] },
-		win: { scroll:[], load:[], resize:[], resizestart:[], resizestop:[], orientationchange:[] }
-	};
 
-	(function($){
-		var slice = Array.prototype.slice;
-		$.extend($.event.special,{
-
-			resizestop:{
-				add: function(handle){
-					var handler = handle.handler;
-
-					$(this).resize(function(e){
-						clearTimeout(handler._timer);
-						e.type = "resizestop";
-
-						var _proxy = $.proxy(handler, this, e);
-						handler._timer = setTimeout(_proxy, handle.data || 200);
-					});
-				}
-			},
-			resizestart:{
-				add: function(handle){
-					var handler = handle.handler;
-
-					$(this).on("resize", function(e){
-						clearTimeout(handler._timer);
-						if (!handler._started) {
-							e.type = "resizestart";
-							handler.apply(this, arguments);
-							handler._started = true;
-						}
-						handler._timer = setTimeout($.proxy(function(){
-							handler._started = false;
-						}, this), handle.data || 300);
-					});
-				}
-			}
-		});
-
-		$.extend($.fn, {
-			resizestop: function() {
-				$(this).on.apply(this, ["resizestop"].concat(slice.call(arguments)));
-			},
-			resizestart: function() {
-				$(this).on.apply(this, ["resizestart"].concat(slice.call(arguments)));
-			}
-		});
-	})(jQuery);
-	</script>
 </head>
 
 <body>
@@ -127,25 +77,7 @@
 	<script src="static/js/jsrender-min.js"></script>
 	<script src="static/js/popit.js"></script>
 	<script src="static/js/demojs.js"></script>
-
-	<script type="text/javascript">
-	//This JS file must load last across the entire system - it controls all custom events, document ready and window event binds.
-
-	//bind custom document events
-	for(var i = 0; i < $.e.doc.custom.length; i++){ var c = $.e.doc.custom[i]; $(document).on(c.name, c.func); }
-
-	//new plugins have api's and push events with these functions
-	$(document).ready(function(){ for(var i = 0; i < $.e.doc.ready.length; i++){ $.e.doc.ready[i](); }});
-
-	$(window).on({
-		load:function(){for(var i = 0; i < $.e.win.load.length; i++){ $.e.win.load[i](); };},
-		scroll:function(){for(var i = 0; i < $.e.win.scroll.length; i++){ $.e.win.scroll[i](); };},
-		resize:function(){for(var i = 0; i < $.e.win.resize.length; i++){ $.e.win.resize[i](); };},
-		resizestart:function(){for(var i = 0; i < $.e.win.resizestart.length; i++){ $.e.win.resizestart[i](); };},
-		resizestop:function(){for(var i = 0; i < $.e.win.resizestop.length; i++){ $.e.win.resizestop[i](); };},
-		orientationchange:function(){for(var i = 0; i < $.e.win.orientationchange.length; i++){ $.e.win.orientationchange[i](); };}
-	});
-	</script>
+	<script src="static/js/loadLast.js"></script>
 </body>
 </html>
 
