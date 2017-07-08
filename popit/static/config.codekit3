@@ -107,6 +107,15 @@
 		"sC": 1,
 		"tS": 0
 		},
+	"\/js\/loadLast.js": {
+		"ft": 64,
+		"mi": 1,
+		"oA": 0,
+		"oAP": "\/js\/loadLast-min.js",
+		"oF": 0,
+		"sC": 1,
+		"tS": 0
+		},
 	"\/js\/popit-min.js": {
 		"ft": 64,
 		"mi": 1,
