@@ -139,6 +139,12 @@
 		"oA": 2,
 		"oAP": "\/templates\/dialog.htm",
 		"oF": 0
+		},
+	"\/templates\/prompt.htm": {
+		"ft": 8192,
+		"oA": 2,
+		"oAP": "\/templates\/prompt.htm",
+		"oF": 0
 		}
 	},
 "hooks": [

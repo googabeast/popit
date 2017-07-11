@@ -63,15 +63,22 @@
 -->
 	<h2>Examples of direct HTML utilization:</h2>
 	<ol>
-		<li><a href="javascript:void(0);" data-popit="onpageContent" data-info='{"target":"#onpage"}'>On page Popup</a></li>
-		<li><a href="javascript:void(0);" data-popit="genericPopup" data-info='{ "data":"a test modal" }'>Generic Popup</a></li>
-		<li><a href="javascript:void(0);" data-popit="ajaxExample" data-info='{ "href":"ajax/example.html" }'>Generic Ajax</a></li>
-		<li><a href="javascript:void(0);" data-popit="ajaxIframe" data-info='{ "href":"ajax/iframe.html" }'>Generic iframe</a></li>
-		<li><a href="javascript:void(0);" data-popit="siteFeedback" data-info='{"href":"ajax/siteFeedback.html","css":"siteFeedbackModal"}'>Site Feedback</a></li>
+		<li><a href="#" data-popit="onpageContent" data-info='{"target":"#onpage"}'>On page Popup</a></li>
+		<li><a href="#" data-popit="modalNmodalPopup" data-info='{"target":"#modalNmodal"}'>Modal in Modal</a></li>
+		<li><a href="#" data-popit="genericPopup" data-info='{"data":"a test modal"}'>Generic Popup</a></li>
+		<li><a href="#" data-popit="ajaxExample" data-info='{"href":"ajax/example.html"}'>Generic Ajax</a></li>
+		<li><a href="#" data-popit="ajaxIframe" data-info='{"href":"ajax/iframe.html"}'>Generic iframe</a></li>
+		<li><a href="#" data-popit="siteFeedback" data-info='{"href":"ajax/siteFeedback.html","css":"siteFeedbackModal"}'>Site Feedback</a></li>
+		<li><a href="#" data-popit="dialogExample" data-info='{"dialog":"true"}'>Default Dialog</a></li>
+		<li><a href="#" data-popit="promptExample" data-info='{"prompt":"true"}'>Default Prompt</a></li>
 	</ol>
 
 
 	<div id="onpage" style="display:none;">On page content popup</div>
+	<div id="modalNmodal" style="display:none;">
+		On page content popup with another modal<br/>
+		<a href="#" data-popit="newModal" data-info='{"data":"New modal in modal"}'>New Modal</a>
+	</div>
 
 
 	<script src="static/js/jsrender-min.js"></script>

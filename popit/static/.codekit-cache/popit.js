@@ -3,6 +3,7 @@
 -add notify options, window top, bottom, left, right
 -add automatic close after so many seconds
 -add maximize modal window button
+-add prompt() function with default input
 */
 
 
@@ -432,6 +433,10 @@ popit.prototype = {
 		if(api.opts.dialog === true){
 			data = (com.type(data) === "string")? data : data.errors || data.formErrors;
 		}
+		//if the prompt option is on remap variable from object
+		if(api.opts.prompt === true){
+			data = (com.type(data) === "string")? data : data.errors || data.formErrors;
+		}
 
 		//show a close button at the top of the modal
 		var modalX = (api.opts.modalX)? "<a role='button' aria-label='Close modal' href='javascript:void(0);' class='close'>&otimes;</a>" : "";
@@ -503,6 +508,8 @@ popit.prototype = {
 
 		//always check for dialog insertion
 		if(api.opts.dialog){ $.popit.x.dialog(api); }
+		//always check for prompt insertion
+		if(api.opts.prompt){ $.popit.x.prompt(api); }
 
 		//check for any iframes and $waitForIt() spinner to finish loading
 		if(!$.isEmptyObject(api.iframe)){
@@ -580,17 +587,68 @@ popit.prototype = {
 		}
 	},
 	dialog: function(name, opts){
-		var _this = this;
+		var _this = this,
+			theseOpts = {
+				defaults: {
+					name: name
+				},
+				opts: $.extend({}, {
+					dialog: true,
+					success: (opts.success)? opts.success : null,
+					close: {
+						text: "Close",
+						class: "close",
+						func: function(api, $el, e){ $.popit.close(); }
+					},
+					continue: {
+						text: "Ok",
+						class: "ok",
+						func: function(api, $el, e){}
+					}
 
-		if(opts.close.func === undefined){ opts.close.func = function(){ $.popit.close(); }; }
-		if(opts.close.class === undefined){ opts.close.class = "close"; }
-		if(opts.continue.class === undefined){ opts.continue.class = "continue"; }
+				}, opts),
+		};
+		$.popit.close();
 
-		var theseOpts = {
-			defaults: {
-				name: name
-			},
-			opts: $.extend({}, { dialog: true }, opts),
+		//initialize plugin and send to needed step
+		$.popit._.api[name] = new popit(null, theseOpts);
+		$.popit._.api[name].init($.popit._.api[name]);
+
+		if($.popit._.api[name].opts.href !== undefined){
+			_this.fetch($.popit._.api[name], $.popit._.api[name].opts.data);
+		}else{
+			_this.create($.popit._.api[name], $.popit._.api[name].opts.data);
+		}
+	},
+	prompt: function(name, opts){
+		var _this = this,
+			theseOpts = {
+				defaults: {
+					name: name
+				},
+				opts: $.extend({}, {
+					prompt: true,
+					success: (opts.success)? opts.success : null,
+					input: {
+						id: "idField",
+						class: "classField",
+						name: "nameField",
+						value: "",
+						placeholder: ""
+					},
+					close: {
+						text: "Close",
+						class: "close",
+						func: function(api, $el, e){ $.popit.close(); }
+					},
+					continue: {
+						text: "Ok",
+						class: "ok",
+						func: function(api, $el, e){
+							alert(api.opts.input.value);
+						}
+					}
+				}, opts)
 		};
 		$.popit.close();
 
@@ -676,6 +734,7 @@ $.popit = {
 	x: popitHelper.exceptions,
 	alert:function(name, opts){ popit.prototype.alert(name, opts); },
 	dialog:function(name, opts){ popit.prototype.dialog(name, opts); },
+	prompt:function(name, opts){ popit.prototype.prompt(name, opts); },
 	open:function(name, opts){ popit.prototype.open(name, opts); },
 	close:function(name, opts){ popit.prototype.close(name, opts); },
 	center:function(name, opts){ popit.prototype.center(name, opts); }
@@ -714,6 +773,15 @@ $.fn.popit = function(opts){
 		e.preventDefault();
 		e.stopPropagation();
 		e.stopImmediatePropagation();
+
+		if(api.opts.dialog == "true"){
+			$.popit.dialog(api.opts.name, api.opts);
+			return false;
+		}
+		if(api.opts.prompt == "true"){
+			$.popit.prompt(api.opts.name, api.opts);
+			return false;
+		}
 
 		if(api.opts.aria !== "false"){ api.aria($input); }
 
@@ -822,28 +890,27 @@ $.e.doc.ready.push(function(){
 
 
 
-
-/******************************************************* dialog functions ***************/
+/******************************************************* dialog & prompt functions ***************/
 /*
 $.popit.dialog("example", {
 	data: "example dialog",
 	close: {
 		text: "Close",
 		class: "close",
-		func: function(){
+		func: function(api, $el, e){
 			*OPTIONAL* Only if you wish to bypass the default $.popit.close()
 		}
 	},
 	continue: {
 		text: "Continue",
 		class: "continue",
-		func: function(){}
-	},
-	success: function(){}
+		func: function(api, $el, e){}
+	}
 });
 */
+
 $.popit.x.dialog = function(api){
-	com.jsload("/static/templates/dialog.htm", api.$modal.find("#modalData"), api.opts, true);
+	com.jsload("static/templates/dialog.htm", api.$modal.find("#modalData"), api.opts, true, api.opts.success);
 
 	$(document).on("click", ".dialog"+api.opts.continue.class+"Btn", function(e){
 		e.preventDefault();
@@ -861,7 +928,57 @@ $.popit.x.dialog = function(api){
 		api.opts.close.func(api, $(this), e);
 	});
 };
-/******************************************************* end dialog functions ***************/
+
+
+
+/*
+$.popit.prompt("promptExample", {
+	data: "example prompt, enter a value below",
+	input: {
+		id: "idField",
+		class: "classField",
+		name: "nameField",
+		value: "",
+		placeholder: "Place holder text"
+	},
+	close: {
+		text: "Close",
+		class: "close",
+		func: function(api, $el, e){
+			*OPTIONAL* Only if you wish to bypass the default $.popit.close()
+		}
+	},
+	continue: {
+		text: "Ok",
+		class: "ok",
+		func: function(api, $el, e){
+			alert(api.opts.input.value)
+		}
+	}
+});
+*/
+$.popit.x.prompt = function(api){
+	com.jsload("static/templates/prompt.htm", api.$modal.find("#modalData"), api.opts, true, api.opts.success);
+
+	$(document).on("click", ".prompt"+api.opts.continue.class+"Btn", function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		e.stopImmediatePropagation();
+
+		api.opts.input.value = $("#prompt"+api.opts.input.id+"Txt").val();
+
+		api.opts.continue.func(api, $(this), e);
+	});
+
+	$(document).on("click", ".prompt"+api.opts.close.class+"Btn", function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		e.stopImmediatePropagation();
+
+		api.opts.close.func(api, $(this), e);
+	});
+};
+/******************************************************* end dialog & prompt functions ***************/
 
 
 

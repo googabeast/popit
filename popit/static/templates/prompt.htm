@@ -1,0 +1,14 @@
+<div class="inputWrap">
+	<input id="prompt{{:input.id}}Txt" class="prompt{{:input.class}}Txt" name="prompt{{:input.name}}Txt" value="{{:input.value}}" {{if input.placeholder !==""}}placeholder="{{:input.placeholder}}"{{/if}} type="text" />
+</div><!--inputWrap-->
+<br/>
+
+<div class="gridWrap">
+	<div class="col1ep">
+		<a class="redBtn fakeBtn prompt{{:close.class}}Btn">{{:close.text}}</a>
+	</div><!--col1ep-->
+	<div class="col2ep">
+		<a id="prompt{{:continue.class}}Btn" class="redBtn fakeBtn prompt{{:continue.class}}Btn">{{:continue.text}}</a>
+	</div><!--col2ep-->
+	<div class="clear"></div>
+</div><!--gridWrap-->
