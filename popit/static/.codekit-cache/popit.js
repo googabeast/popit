@@ -4,6 +4,7 @@
 -add automatic close after so many seconds
 -add maximize modal window button
 -add prompt() function with default input
+-finilize the .has function to return possible arrays
 */
 
 
@@ -11,15 +12,16 @@
 
 var com = {
 	timeout: 1800, //is 30mins
-	jsload: function(template, $el, obj, append, callback){
+	jsload: function(info){
 		var _this = this;
 
-		$.get(template, function(value){
+		$.get(info.url, function(value){
 			$.templates("tmpl", value);
-			var html = $.render.tmpl(obj);
-			if(append){ $el.append(html); }else{ $el.html(html); }
-		}).done(function(){
-			if(callback !== undefined && _this.type(callback) === "function"){ callback(); }
+			var html = $.render.tmpl(info.data);
+			if(info.append){ info.target.append(html); }else{ info.target.html(html); }
+		}).done(function(html){
+			if(info.run !== undefined && _this.type(info.run) === "function"){ info.run(html); }
+			if(info.callback !== undefined && _this.type(info.callback) === "function"){ info.callback(html); }
 		});
 	},
 	waitForIt:function($el, callback){
@@ -321,6 +323,26 @@ popit.prototype = {
 			}
 		}
 	},
+	has: {
+		form: function(data){
+			var temp = {};
+			if($(data).find("form").length > 0){ temp = $(data).find("form"); }
+			if($(data).filter("form").length > 0){ temp = $(data).filter("form"); }
+			return (!$.isEmptyObject(temp))? temp : false;
+		},
+		iframe: function(data){
+			var temp = {};
+			if($(data).find("iframe").length > 0){ temp = $(data).find("iframe"); }
+			if($(data).filter("iframe").length > 0){ temp = $(data).filter("iframe"); }
+			return (!$.isEmptyObject(temp))? temp : false;
+		},
+		modal: function(data){
+			var temp = {};
+			if($(data).find("[data-popit]").length > 0){ temp = $(data).find("[data-popit]"); }
+			if($(data).filter("[data-popit]").length > 0){ temp = $(data).filter("[data-popit]"); }
+			return (!$.isEmptyObject(temp))? temp : false;
+		}
+	},
 	fetch: function(api){
 		var _this = this;
 
@@ -370,18 +392,11 @@ popit.prototype = {
 					}
 				},
 				success:function(data){
-					//search data for iframes and forms
-					api.iframe = ($(data).filter("iframe").length > 0 || $(data).find("iframe").length > 0)? true : false;
-					if(api.iframe){
-						if($(data).filter("iframe").length > 0){
-							api.iframe = $(data).filter("iframe");
-						}
-						if($(data).find("iframe").length > 0){
-							api.iframe = $(data).find("iframe");
-						}
-					}
+					//search data for specific elements
+					api.form = _this.has.form(data);
+					api.iframe = _this.has.iframe(data);
+					api.modal = _this.has.modal(data);
 
-					api.form = ($(data).find("form").length > 0)? true : false;
 					api.successMsg = ($(data).find(".successResponse").length > 0)? $(data).find(".successResponse").html() : null;
 
 					//if forms capture all required inputs
@@ -604,8 +619,13 @@ popit.prototype = {
 						text: "Ok",
 						class: "ok",
 						func: function(api, $el, e){}
+					},
+					runDone: function(data){
+						//check to see if template containers another modal
+						opts.$modal = _this.has.modal(data);
+						$("[data-popit='"+opts.$modal.attr("data-popit")+"']").popit();
+						console.log($("[data-popit='"+opts.$modal.attr("data-popit")+"']"));
 					}
-
 				}, opts),
 		};
 		$.popit.close();
@@ -646,6 +666,12 @@ popit.prototype = {
 						class: "ok",
 						func: function(api, $el, e){
 							alert(api.opts.input.value);
+						}
+					},
+					runDone: function(data){
+						//check to see if template containers another modal
+						if(_this.contains.modal(data)){
+							console.log("really really does")
 						}
 					}
 				}, opts)
@@ -752,7 +778,14 @@ $.fn.popit = function(opts){
 		rev.init();
 		$(this).data("popit", rev);
 
-		$.popit._.api[rev.defaults.name] = $.extend({}, $(this).data("popit"), $(this).data("info"));
+		//convert 'string' "true"/"false" -> boolean
+		data = $(this).data("info");
+		$.each(data, function(_k,_v){
+			if(_v === "true"){ data[_k] = true; }
+			if(_v === "false"){ data[_k] = false; }
+		});
+
+		$.popit._.api[rev.defaults.name] = $.extend({}, $(this).data("popit"), data);
 	});
 
 	//populate the holding container for all modals
@@ -769,7 +802,7 @@ $.fn.popit = function(opts){
 		var $input = $(this),
 			name = $input.attr("data-popit"),
 			api = $.popit._.api[name];
-
+console.log("in click")
 		e.preventDefault();
 		e.stopPropagation();
 		e.stopImmediatePropagation();
@@ -910,7 +943,14 @@ $.popit.dialog("example", {
 */
 
 $.popit.x.dialog = function(api){
-	com.jsload("static/templates/dialog.htm", api.$modal.find("#modalData"), api.opts, true, api.opts.success);
+	com.jsload({
+		url: "static/templates/dialog.htm",
+		target: api.$modal.find("#modalData"),
+		data: api.opts,
+		append: true,
+		success: api.opts.success,
+		run: api.opts.runDone
+	});
 
 	$(document).on("click", ".dialog"+api.opts.continue.class+"Btn", function(e){
 		e.preventDefault();
@@ -958,7 +998,14 @@ $.popit.prompt("promptExample", {
 });
 */
 $.popit.x.prompt = function(api){
-	com.jsload("static/templates/prompt.htm", api.$modal.find("#modalData"), api.opts, true, api.opts.success);
+	com.jsload({
+		url: "static/templates/prompt.htm",
+		target: api.$modal.find("#modalData"),
+		data: api.opts,
+		append: true,
+		success: api.opts.success,
+		run: api.opts.runDone
+	});
 
 	$(document).on("click", ".prompt"+api.opts.continue.class+"Btn", function(e){
 		e.preventDefault();

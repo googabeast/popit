@@ -4,6 +4,7 @@
 -add automatic close after so many seconds
 -add maximize modal window button
 -add prompt() function with default input
+-finilize the .has function to return possible arrays
 */
 
 
@@ -19,9 +20,23 @@ var com = {
 			var html = $.render.tmpl(info.data);
 			if(info.append){ info.target.append(html); }else{ info.target.html(html); }
 		}).done(function(html){
-			if(info.run !== undefined && _this.type(info.run) === "function"){ info.run(html); }
-			if(info.callback !== undefined && _this.type(info.callback) === "function"){ info.callback(html); }
+			if(info.run !== undefined && _this.isFunc(info.run)){ info.run(html); }
+			if(info.callback !== undefined && _this.isFunc(info.callback)){ info.callback(html); }
 		});
+	},
+	detect: function(data, arr){
+		var $data = $(data),
+			obj = {};
+
+		$.each(arr, function(i,v){
+			if($data.find(v.sel).length > 0){
+				obj = { name: v.name, $el: $data.find(v.sel) };
+			}
+			if($data.filter(v.sel).length > 0){
+				obj = { name: v.name, $el: $data.filter(v.sel) };
+			}
+		});
+		return obj;
 	},
 	waitForIt:function($el, callback){
 		var _this = this,
@@ -62,21 +77,21 @@ var com = {
 
 		// $(document).ajaxComplete(function(){});
 
-		if(_this.type(callback) === "function"){ callback(); }
+		if(_this.isFunc(callback)){ callback(); }
 	},
 	checkApiEvents: function(api){
 		var _this = this;
 		if(!$.isEmptyObject(api.doc)){
 
 			$.each(api.doc, function(k,v){
-				if(_this.type(v) === "function"){
+				if(_this.isFunc(v)){
 					$.e.doc[k].push(v);
 				}
 			});
 		}
 		if(!$.isEmptyObject(api.win)){
 			$.each(api.win, function(k,v){
-				if(_this.type(v) === "function"){
+				if(_this.isFunc(v)){
 					$.e.win[k].push(v);
 				}
 			});
@@ -103,7 +118,8 @@ var com = {
 			default:itis="undefined";break;
 		}
 		return itis;
-	}
+	},
+	isFunc: function(name){ if(typeof name == "function"){ return true; } }
 };
 
 com.waitForIt();
@@ -304,7 +320,7 @@ popit.prototype = {
 
 		//bind any DOM ready events for click handlers or listeners that are not active 'after click'
 		if(!$.isEmptyObject(api)){
-			if(com.type($.popit.x[_this.defaults.name+"DOMReady"]) === "function"){
+			if(com.isFunc($.popit.x[_this.defaults.name+"DOMReady"])){
 				$.popit.x[_this.defaults.name+"DOMReady"](_this);
 			}
 
@@ -317,23 +333,26 @@ popit.prototype = {
 				}
 			}
 		}else{
-			if(com.type($.popit.x[_this.defaults.name+"DOMReady"]) === "function"){
+			if(com.isFunc($.popit.x[_this.defaults.name+"DOMReady"])){
 				$.popit.x[_this.defaults.name+"DOMReady"](_this);
 			}
 		}
 	},
 	has: {
 		form: function(data){
+			var temp = {};
 			if($(data).find("form").length > 0){ temp = $(data).find("form"); }
 			if($(data).filter("form").length > 0){ temp = $(data).filter("form"); }
 			return (!$.isEmptyObject(temp))? temp : false;
 		},
 		iframe: function(data){
+			var temp = {};
 			if($(data).find("iframe").length > 0){ temp = $(data).find("iframe"); }
 			if($(data).filter("iframe").length > 0){ temp = $(data).filter("iframe"); }
 			return (!$.isEmptyObject(temp))? temp : false;
 		},
 		modal: function(data){
+			var temp = {};
 			if($(data).find("[data-popit]").length > 0){ temp = $(data).find("[data-popit]"); }
 			if($(data).filter("[data-popit]").length > 0){ temp = $(data).filter("[data-popit]"); }
 			return (!$.isEmptyObject(temp))? temp : false;
@@ -361,7 +380,7 @@ popit.prototype = {
 		}
 
 		//before ajax check before exceptions to see if there are any additional modifaction to the object
-		if(com.type($.popit.x[api.defaults.name+"BeforeSend"]) === "function"){
+		if(com.isFunc($.popit.x[api.defaults.name+"BeforeSend"])){
 			$.popit.x[api.defaults.name+"BeforeSend"](api);
 		}
 
@@ -383,15 +402,18 @@ popit.prototype = {
 				data: api.opts.form || apiOpts,
 				dataType: dataType,
 				beforeSend:function(){
-					if(com.type(api.opts.before) === "function"){
+					if(com.isFunc(api.opts.before)){
 						api.opts.before();
 					}
 				},
 				success:function(data){
 					//search data for specific elements
-					api.form = _this.has.form(data);
-					api.iframe = _this.has.iframe(data);
-					api.modal = _this.has.modal(data);
+					var hasIt = com.detect(data, [
+						{ name: "form", sel: "form" },
+						{ name: "iframe", sel: "iframe" },
+						{ name: "modal", sel: "[data-popit]" }
+					]);
+					api[hasIt.name] = hasIt.$el;
 
 					api.successMsg = ($(data).find(".successResponse").length > 0)? $(data).find(".successResponse").html() : null;
 
@@ -414,12 +436,12 @@ popit.prototype = {
 					}
 
 					//runs within this function
-					if(com.type(api.opts.insuccess) === "function"){
+					if(com.isFunc(api.opts.insuccess)){
 						api.opts.insuccess(data);
 					}
 
 					//escapes and runs success on caller
-					if(com.type(api.opts.success) === "function" && data.result === "success"){
+					if(com.isFunc(api.opts.success) && data.result === "success"){
 						api.opts.success();
 						return true;
 					}else{
@@ -428,7 +450,7 @@ popit.prototype = {
 					}
 				},
 				complete:function(){
-					if(com.type(api.opts.complete) === "function"){
+					if(com.isFunc(api.opts.complete)){
 						api.opts.complete();
 					}
 				},
@@ -508,12 +530,12 @@ popit.prototype = {
 		var _this = this;
 
 		//after load of data check to see if there are any unique exceptions for the modals
-		if(com.type($.popit.x[api.defaults.name]) === "function"){
+		if(com.isFunc($.popit.x[api.defaults.name])){
 			$.popit.x[api.defaults.name](api);
 		}
 
 		//check to see if closeBtn has a unique function bound
-		if(com.type(api.opts.closeBtnFunc) === "function"){
+		if(com.isFunc(api.opts.closeBtnFunc)){
 			$(document).on("click", "a.closeModal", api.opts.closeBtnFunc);
 		}
 
@@ -540,7 +562,7 @@ popit.prototype = {
 		}
 
 		//runs within this function
-		if(com.type(api.opts.runLast) === "function"){
+		if(com.isFunc(api.opts.runLast)){
 			api.opts.runLast(api);
 		}
 
@@ -617,10 +639,14 @@ popit.prototype = {
 						func: function(api, $el, e){}
 					},
 					runDone: function(data){
-						//check to see if template containers another modal
-						opts.$modal = _this.has.modal(data);
-						$("[data-popit='"+opts.$modal.attr("data-popit")+"']").popit();
-						console.log($("[data-popit='"+opts.$modal.attr("data-popit")+"']"));
+						//search data for specific elements
+						var hasIt = com.detect(data, [
+							{ name: "form", sel: "form" },
+							{ name: "iframe", sel: "iframe" },
+							{ name: "modal", sel: "[data-popit]" }
+						]);
+
+						$("[data-popit='"+hasIt.$el.attr("data-popit")+"']").popit();
 					}
 				}, opts),
 		};
@@ -725,7 +751,7 @@ popit.prototype = {
 
 				try{
 					//runs within this function
-					if(com.type($active.opts.onClose) === "function"){
+					if(com.isFunc($active.opts.onClose)){
 						$active.opts.onClose($active);
 					}
 				}catch(e){}

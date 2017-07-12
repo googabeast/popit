@@ -1,12 +1,14 @@
 @import (reference) "lessMinded.less";
 /******************************************************* generic / express modal ***************/
 
+
+
 #modalWrap{
 	h2{ .txt(b 1.5em none l); margin-bottom:.5em; }
 	iframe{ .size(100% 100%); border:0; }
 	> [id^='expose']{ .dis(b); .bg(#000); .size(100% 100%); .pos(f); .place(0 n n 0); .z(9998); .opacity(.5); }
 	> div.popup{ .dis(b); .bg(#fff); .b(#000); .size(700px); .z(9999); .opacity(0); padding:0.5em;
-		a.close{ .dis(b); .bg(#000); .b(#000); .size(20px 20px); .pos(a); .place(-10px -10px); .border-radius(20px); .txt(#fff 19px no c); }
+		a.close{ .dis(b); .bg(#000); .b(#000); .size(20px 20px); .pos(a); .place(-10px -10px); .border-radius(20px); .txt(#fff 20px lh 19px no c); }
 	}
 }
 
@@ -14,10 +16,3 @@
 	.pos(a); .place(0 n n 0); .z(9999); .dis(b); .opacity(.7);
 	&.fixed{ .pos(f) !important; }
 }
-
-
-
-
-
-//just some generic styles for demo only
-input, textarea{ .size(300px); .b(#ccc); .txt(.8em lh 20px); padding:5px; }
