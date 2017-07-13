@@ -338,26 +338,6 @@ popit.prototype = {
 			}
 		}
 	},
-	has: {
-		form: function(data){
-			var temp = {};
-			if($(data).find("form").length > 0){ temp = $(data).find("form"); }
-			if($(data).filter("form").length > 0){ temp = $(data).filter("form"); }
-			return (!$.isEmptyObject(temp))? temp : false;
-		},
-		iframe: function(data){
-			var temp = {};
-			if($(data).find("iframe").length > 0){ temp = $(data).find("iframe"); }
-			if($(data).filter("iframe").length > 0){ temp = $(data).filter("iframe"); }
-			return (!$.isEmptyObject(temp))? temp : false;
-		},
-		modal: function(data){
-			var temp = {};
-			if($(data).find("[data-popit]").length > 0){ temp = $(data).find("[data-popit]"); }
-			if($(data).filter("[data-popit]").length > 0){ temp = $(data).filter("[data-popit]"); }
-			return (!$.isEmptyObject(temp))? temp : false;
-		}
-	},
 	fetch: function(api){
 		var _this = this;
 
@@ -370,7 +350,6 @@ popit.prototype = {
 		function checkLinkswitch(){
 			if(api.opts.href.match(api.defaults.rxMatch)){
 				var page = "";
-
 				api.opts.href = api.opts.href.replace(api.defaults.rxMatch, page);
 			}
 		}
@@ -450,6 +429,10 @@ popit.prototype = {
 					}
 				},
 				complete:function(){
+					if(api.modal){
+						console.log("fetch has modal");
+					}
+
 					if(com.isFunc(api.opts.complete)){
 						api.opts.complete();
 					}
@@ -483,7 +466,19 @@ popit.prototype = {
 		var structureDefault = "<div id='"+api.defaults.name+"' class='popup "+api.opts.css+"' style='visibility:hidden;"+api.opts.style+"'>"+modalX+"<div id='modalData'>"+targetContent+"</div>"+closeBtn+"</div>";
 		var structure = (api.opts.structure)? "" : structureDefault;
 
+		//append the modal
 		$.popit._.$wrap.append(structure);
+
+		//if the modal contains elements then execute needed plugins
+		if(api.opts.target){
+			//search data for specific elements
+			var hasIt = com.detect(api.opts.target, [
+				{ name: "modal", sel: "[data-popit]" }
+			]);
+			api[hasIt.name] = hasIt.$el;
+
+			$("[data-popit='"+hasIt.$el.attr("data-popit")+"']").popit();
+		}
 
 		//hide / show expose background
 		if(api.opts.expose){
@@ -499,7 +494,11 @@ popit.prototype = {
 
 		api.$modal = $("#"+api.defaults.name);
 		api.$container = api.$modal.find("#modalData");
-		api.$container.append(data);
+
+		//if data exists then append to the modal
+		if(data){
+			api.$container.append(data);
+		}
 
 		if(api.form && api.$required.length > 0){
 			//after appending to the document bind key events for required fields
@@ -507,7 +506,7 @@ popit.prototype = {
 			com.keyEvents(api, api.$required);
 		}
 
-		_this.style(api);
+		_this.paint(api);
 	},
 	center:function(api){
 		var _this = this;
@@ -526,7 +525,7 @@ popit.prototype = {
 		_this.height = height;
 		$modal.css({"position":isMobile,"visibility":"visible","top":top,"left":left}).animate({"opacity":"1"}, 300);
 	},
-	style:function(api){
+	paint:function(api){
 		var _this = this;
 
 		//after load of data check to see if there are any unique exceptions for the modals
@@ -613,11 +612,8 @@ popit.prototype = {
 		$.popit._.api[name] = new popit(null, theseOpts);
 		$.popit._.api[name].init($.popit._.api[name]);
 
-		if($.popit._.api[name].opts.href !== undefined){
-			_this.fetch($.popit._.api[name], $.popit._.api[name].opts.data);
-		}else{
-			$.popit._.create($.popit._.api[name], $.popit._.api[name].opts.data);
-		}
+		var go = ($.popit._.api[name].opts.href !== undefined)? "fetch" : "create";
+		_this[go]($.popit._.api[name], $.popit._.api[name].opts.data);
 	},
 	dialog: function(name, opts){
 		var _this = this,
@@ -656,11 +652,8 @@ popit.prototype = {
 		$.popit._.api[name] = new popit(null, theseOpts);
 		$.popit._.api[name].init($.popit._.api[name]);
 
-		if($.popit._.api[name].opts.href !== undefined){
-			_this.fetch($.popit._.api[name], $.popit._.api[name].opts.data);
-		}else{
-			_this.create($.popit._.api[name], $.popit._.api[name].opts.data);
-		}
+		var go = ($.popit._.api[name].opts.href !== undefined)? "fetch" : "create";
+		_this[go]($.popit._.api[name], $.popit._.api[name].opts.data);
 	},
 	prompt: function(name, opts){
 		var _this = this,
@@ -704,11 +697,8 @@ popit.prototype = {
 		$.popit._.api[name] = new popit(null, theseOpts);
 		$.popit._.api[name].init($.popit._.api[name]);
 
-		if($.popit._.api[name].opts.href !== undefined){
-			_this.fetch($.popit._.api[name], $.popit._.api[name].opts.data);
-		}else{
-			_this.create($.popit._.api[name], $.popit._.api[name].opts.data);
-		}
+		var go = ($.popit._.api[name].opts.href !== undefined)? "fetch" : "create";
+		_this[go]($.popit._.api[name], $.popit._.api[name].opts.data);
 	},
 	open: function(name, opts){
 		var _this = this;
@@ -728,11 +718,8 @@ popit.prototype = {
 			$.popit._.api[name] = new popit(null, theseOpts);
 			$.popit._.api[name].init($.popit._.api[name]);
 
-			if($.popit._.api[name].opts.href !== undefined){
-				_this.fetch($.popit._.api[name], $.popit._.api[name].opts.data);
-			}else{
-				$.popit._.create($.popit._.api[name], $.popit._.api[name].opts.data);
-			}
+			var go = ($.popit._.api[name].opts.href !== undefined)? "fetch" : "create";
+			_this[go]($.popit._.api[name], $.popit._.api[name].opts.data);
 		}
 	},
 	close: function(name, opts){
@@ -849,9 +836,11 @@ console.log("in click")
 	});
 
 	//closes active modal
+	$(document).off("click", "#expose, a.close, a.closeModal", this.close);
 	$(document).on("click", "#expose, a.close, a.closeModal", this.close);
 
 	//binds ESC key to close active modal
+	$(document).off("keydown", function(e){if($.popit._._active.length > -1 && e.keyCode === 27){ $.popit.close(); }});
 	$(document).on("keydown", function(e){if($.popit._._active.length > -1 && e.keyCode === 27){ $.popit.close(); }});
 
 };

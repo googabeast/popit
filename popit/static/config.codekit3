@@ -135,11 +135,29 @@
 		"sC": 0,
 		"tS": 0
 		},
+	"\/js\/loadFirst-min.js": {
+		"ft": 64,
+		"mi": 1,
+		"oA": 0,
+		"oAP": "\/js\/loadFirst-min-min.js",
+		"oF": 0,
+		"sC": 1,
+		"tS": 0
+		},
 	"\/js\/loadFirst.js": {
 		"ft": 64,
 		"mi": 1,
 		"oA": 0,
 		"oAP": "\/js\/loadFirst-min.js",
+		"oF": 0,
+		"sC": 1,
+		"tS": 0
+		},
+	"\/js\/loadLast-min.js": {
+		"ft": 64,
+		"mi": 1,
+		"oA": 0,
+		"oAP": "\/js\/loadLast-min-min.js",
 		"oF": 0,
 		"sC": 1,
 		"tS": 0
