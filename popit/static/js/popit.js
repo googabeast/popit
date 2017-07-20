@@ -475,9 +475,10 @@ popit.prototype = {
 			var hasIt = com.detect(api.opts.target, [
 				{ name: "modal", sel: "[data-popit]" }
 			]);
-			api[hasIt.name] = hasIt.$el;
-
-			$("[data-popit='"+hasIt.$el.attr("data-popit")+"']").popit();
+			if(!$.isEmptyObject(hasIt.$el)){
+				api[hasIt.name] = hasIt.$el;
+				$("[data-popit='"+hasIt.$el.attr("data-popit")+"']").popit();
+			}
 		}
 
 		//hide / show expose background
@@ -632,17 +633,16 @@ popit.prototype = {
 					continue: {
 						text: "Ok",
 						class: "ok",
-						func: function(api, $el, e){}
+						func: function(api, $el, e){ alert("default"); }
 					},
-					runDone: function(data){
+					run: function(data){
 						//search data for specific elements
 						var hasIt = com.detect(data, [
-							{ name: "form", sel: "form" },
-							{ name: "iframe", sel: "iframe" },
 							{ name: "modal", sel: "[data-popit]" }
 						]);
-
-						$("[data-popit='"+hasIt.$el.attr("data-popit")+"']").popit();
+						if(!$.isEmptyObject(hasIt.$el)){
+							$("[data-popit='"+hasIt.$el.attr("data-popit")+"']").popit();
+						}
 					}
 				}, opts),
 		};
@@ -683,10 +683,13 @@ popit.prototype = {
 							alert(api.opts.input.value);
 						}
 					},
-					runDone: function(data){
-						//check to see if template containers another modal
-						if(_this.contains.modal(data)){
-							console.log("really really does")
+					run: function(data){
+						//search data for specific elements
+						var hasIt = com.detect(data, [
+							{ name: "modal", sel: "[data-popit]" }
+						]);
+						if(!$.isEmptyObject(hasIt.$el)){
+							$("[data-popit='"+hasIt.$el.attr("data-popit")+"']").popit();
 						}
 					}
 				}, opts)
@@ -807,14 +810,18 @@ $.fn.popit = function(opts){
 		$.popit.close();
 	};
 
-	$el.on("click", function(e){
+
+	$el.off("click").on("click", function(e){
 		var $input = $(this),
 			name = $input.attr("data-popit"),
 			api = $.popit._.api[name];
-console.log("in click")
+
 		e.preventDefault();
 		e.stopPropagation();
 		e.stopImmediatePropagation();
+
+		//return if the modal is already open
+		if($("#"+api.opts.name).length){ return true; }
 
 		if(api.opts.dialog == "true"){
 			$.popit.dialog(api.opts.name, api.opts);
@@ -832,21 +839,22 @@ console.log("in click")
 		}else{
 			api.fetch(api);
 		}
-
 	});
 
-	//closes active modal
-	$(document).off("click", "#expose, a.close, a.closeModal", this.close);
-	$(document).on("click", "#expose, a.close, a.closeModal", this.close);
+
+
+	$.popit._.$wrap.off("click", "#expose, a.close, a.closeModal");
+	$.popit._.$wrap.on("click", "#expose, a.close, a.closeModal", this.close);
 
 	//binds ESC key to close active modal
-	$(document).off("keydown", function(e){if($.popit._._active.length > -1 && e.keyCode === 27){ $.popit.close(); }});
-	$(document).on("keydown", function(e){if($.popit._._active.length > -1 && e.keyCode === 27){ $.popit.close(); }});
+	$.popit._.$wrap.off("keydown");
+	$.popit._.$wrap.on("keydown", function(e){if($.popit._._active.length > -1 && e.keyCode === 27){ $.popit.close(); }});
+
+
 
 };
 com.checkApiEvents($.popit._);
 /******************************************************* end popit ***************/
-
 
 
 
@@ -960,10 +968,11 @@ $.popit.x.dialog = function(api){
 		data: api.opts,
 		append: true,
 		success: api.opts.success,
-		run: api.opts.runDone
+		run: api.opts.run
 	});
 
-	$(document).on("click", ".dialog"+api.opts.continue.class+"Btn", function(e){
+	$.popit._.$wrap.off("click", ".dialog"+api.opts.continue.class+"Btn");
+	$.popit._.$wrap.on("click", ".dialog"+api.opts.continue.class+"Btn", function(e){
 		e.preventDefault();
 		e.stopPropagation();
 		e.stopImmediatePropagation();
@@ -971,7 +980,8 @@ $.popit.x.dialog = function(api){
 		api.opts.continue.func(api, $(this), e);
 	});
 
-	$(document).on("click", ".dialog"+api.opts.close.class+"Btn", function(e){
+	$.popit._.$wrap.off("click", ".dialog"+api.opts.close.class+"Btn");
+	$.popit._.$wrap.on("click", ".dialog"+api.opts.close.class+"Btn", function(e){
 		e.preventDefault();
 		e.stopPropagation();
 		e.stopImmediatePropagation();
@@ -1015,10 +1025,11 @@ $.popit.x.prompt = function(api){
 		data: api.opts,
 		append: true,
 		success: api.opts.success,
-		run: api.opts.runDone
+		run: api.opts.run
 	});
 
-	$(document).on("click", ".prompt"+api.opts.continue.class+"Btn", function(e){
+	$.popit._.$wrap.off("click", ".prompt"+api.opts.continue.class+"Btn");
+	$.popit._.$wrap.on("click", ".prompt"+api.opts.continue.class+"Btn", function(e){
 		e.preventDefault();
 		e.stopPropagation();
 		e.stopImmediatePropagation();
@@ -1028,7 +1039,8 @@ $.popit.x.prompt = function(api){
 		api.opts.continue.func(api, $(this), e);
 	});
 
-	$(document).on("click", ".prompt"+api.opts.close.class+"Btn", function(e){
+	$.popit._.$wrap.off("click", ".prompt"+api.opts.close.class+"Btn");
+	$.popit._.$wrap.on("click", ".prompt"+api.opts.close.class+"Btn", function(e){
 		e.preventDefault();
 		e.stopPropagation();
 		e.stopImmediatePropagation();
