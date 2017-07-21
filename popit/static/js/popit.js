@@ -598,23 +598,45 @@ popit.prototype = {
 
 
 
+	start: function(name, opts){
+		var _this = this;
 
+		//initialize plugin and send to needed step
+		$.popit._.api[name] = new popit(null, opts);
+		$.popit._.api[name].init($.popit._.api[name]);
+
+		var go = ($.popit._.api[name].opts.href !== undefined)? "fetch" : "create";
+		_this[go]($.popit._.api[name], $.popit._.api[name].opts.data);
+	},
 	alert: function(name, opts){
 		var _this = this,
 			theseOpts = {
 			defaults: {
 				name: name,
 			},
-			opts: $.extend({}, { closeBtn: "Close" }, opts),
+			opts: $.extend({}, { closeBtn: "Close" }, opts)
+			// opts: $.extend({}, {
+			// 	alert: true,
+			// 	success: (opts.success)? opts.success : null,
+			// 	close: {
+			// 		text: "Close",
+			// 		class: "close",
+			// 		func: function(api, $el, e){ $.popit.close(); }
+			// 	},
+			// 	run: function(data){
+			// 		//search data for specific elements
+			// 		var hasIt = com.detect(data, [
+			// 			{ name: "modal", sel: "[data-popit]" }
+			// 		]);
+			// 		if(!$.isEmptyObject(hasIt.$el)){
+			// 			$("[data-popit='"+hasIt.$el.attr("data-popit")+"']").popit();
+			// 		}
+			// 	}
+			// }, opts)
 		};
 		$.popit.close();
 
-		//initialize plugin and send to needed step
-		$.popit._.api[name] = new popit(null, theseOpts);
-		$.popit._.api[name].init($.popit._.api[name]);
-
-		var go = ($.popit._.api[name].opts.href !== undefined)? "fetch" : "create";
-		_this[go]($.popit._.api[name], $.popit._.api[name].opts.data);
+		_this.start(name, theseOpts);
 	},
 	dialog: function(name, opts){
 		var _this = this,
@@ -644,16 +666,11 @@ popit.prototype = {
 							$("[data-popit='"+hasIt.$el.attr("data-popit")+"']").popit();
 						}
 					}
-				}, opts),
+				}, opts)
 		};
 		$.popit.close();
 
-		//initialize plugin and send to needed step
-		$.popit._.api[name] = new popit(null, theseOpts);
-		$.popit._.api[name].init($.popit._.api[name]);
-
-		var go = ($.popit._.api[name].opts.href !== undefined)? "fetch" : "create";
-		_this[go]($.popit._.api[name], $.popit._.api[name].opts.data);
+		_this.start(name, theseOpts);
 	},
 	prompt: function(name, opts){
 		var _this = this,
@@ -696,12 +713,7 @@ popit.prototype = {
 		};
 		$.popit.close();
 
-		//initialize plugin and send to needed step
-		$.popit._.api[name] = new popit(null, theseOpts);
-		$.popit._.api[name].init($.popit._.api[name]);
-
-		var go = ($.popit._.api[name].opts.href !== undefined)? "fetch" : "create";
-		_this[go]($.popit._.api[name], $.popit._.api[name].opts.data);
+		_this.start(name, theseOpts);
 	},
 	open: function(name, opts){
 		var _this = this;
@@ -713,16 +725,11 @@ popit.prototype = {
 				defaults: {
 					name: name
 				},
-				opts: opts,
+				opts: opts
 			};
 			$.popit.close();
 
-			// //initialize plugin and send to needed step
-			$.popit._.api[name] = new popit(null, theseOpts);
-			$.popit._.api[name].init($.popit._.api[name]);
-
-			var go = ($.popit._.api[name].opts.href !== undefined)? "fetch" : "create";
-			_this[go]($.popit._.api[name], $.popit._.api[name].opts.data);
+			_this.start(name, theseOpts);
 		}
 	},
 	close: function(name, opts){
